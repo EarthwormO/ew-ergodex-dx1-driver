@@ -1,0 +1,8 @@
+[Dd]ebug*/
+[Rr]elease*/
+*.pfx
+Thumbs.db
+*.user
+*.sou
+[Bb]in*/
+[Uu]pload*/

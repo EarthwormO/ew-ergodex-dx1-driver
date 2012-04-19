@@ -14,12 +14,6 @@ namespace DX1Utility
         public bool ProfEnabled = true;
         public bool QuickMenu = false;
 
-        //public void LoadKeyset()
-        //{
-        //    //Load the current Keyset and send it to the Dx1
-
-        //}
-
     }
 
 }

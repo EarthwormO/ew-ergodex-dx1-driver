@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ButtonList = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.EditMacros = new System.Windows.Forms.Button();
@@ -37,6 +38,16 @@
             this.B_EditProfile = new System.Windows.Forms.Button();
             this.C_Debug = new System.Windows.Forms.CheckBox();
             this.B_Delete = new System.Windows.Forms.Button();
+            this.G_KeyMap = new System.Windows.Forms.DataGridView();
+            this.Dx1Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CM_KeyMap = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.G_KeyMap)).BeginInit();
+            this.CM_KeyMap.SuspendLayout();
             this.SuspendLayout();
             // 
             // ButtonList
@@ -129,11 +140,80 @@
             this.B_Delete.UseVisualStyleBackColor = true;
             this.B_Delete.Click += new System.EventHandler(this.B_Delete_Click);
             // 
+            // G_KeyMap
+            // 
+            this.G_KeyMap.AllowUserToAddRows = false;
+            this.G_KeyMap.AllowUserToDeleteRows = false;
+            this.G_KeyMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.G_KeyMap.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Dx1Key,
+            this.Type,
+            this.Action,
+            this.Description});
+            this.G_KeyMap.ContextMenuStrip = this.CM_KeyMap;
+            this.G_KeyMap.Location = new System.Drawing.Point(295, 34);
+            this.G_KeyMap.Name = "G_KeyMap";
+            this.G_KeyMap.RowHeadersVisible = false;
+            this.G_KeyMap.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.G_KeyMap.Size = new System.Drawing.Size(102, 407);
+            this.G_KeyMap.TabIndex = 15;
+            this.G_KeyMap.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.G_KeyMap_CellMouseDown);
+            // 
+            // Dx1Key
+            // 
+            this.Dx1Key.Frozen = true;
+            this.Dx1Key.HeaderText = "Key";
+            this.Dx1Key.Name = "Dx1Key";
+            this.Dx1Key.ReadOnly = true;
+            // 
+            // Type
+            // 
+            this.Type.Frozen = true;
+            this.Type.HeaderText = "Type";
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            // 
+            // Action
+            // 
+            this.Action.Frozen = true;
+            this.Action.HeaderText = "Action";
+            this.Action.Name = "Action";
+            this.Action.ReadOnly = true;
+            // 
+            // Description
+            // 
+            this.Description.Frozen = true;
+            this.Description.HeaderText = "Description";
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            // 
+            // CM_KeyMap
+            // 
+            this.CM_KeyMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.programToolStripMenuItem,
+            this.clearToolStripMenuItem});
+            this.CM_KeyMap.Name = "CM_KeyMap";
+            this.CM_KeyMap.Size = new System.Drawing.Size(115, 48);
+            // 
+            // programToolStripMenuItem
+            // 
+            this.programToolStripMenuItem.Name = "programToolStripMenuItem";
+            this.programToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.programToolStripMenuItem.Text = "Program";
+            this.programToolStripMenuItem.Click += new System.EventHandler(this.programToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(635, 497);
+            this.ClientSize = new System.Drawing.Size(635, 494);
+            this.Controls.Add(this.G_KeyMap);
             this.Controls.Add(this.B_Delete);
             this.Controls.Add(this.C_Debug);
             this.Controls.Add(this.B_EditProfile);
@@ -150,6 +230,8 @@
             this.MinimumSize = new System.Drawing.Size(645, 526);
             this.Name = "Form1";
             this.Text = "DX1Utility";
+            ((System.ComponentModel.ISupportInitialize)(this.G_KeyMap)).EndInit();
+            this.CM_KeyMap.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,6 +248,14 @@
         private System.Windows.Forms.Button B_EditProfile;
         private System.Windows.Forms.CheckBox C_Debug;
         private System.Windows.Forms.Button B_Delete;
+        private System.Windows.Forms.DataGridView G_KeyMap;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Dx1Key;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Action;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Description;
+        private System.Windows.Forms.ContextMenuStrip CM_KeyMap;
+        private System.Windows.Forms.ToolStripMenuItem programToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }
 

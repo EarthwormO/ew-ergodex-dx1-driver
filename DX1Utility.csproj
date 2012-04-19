@@ -55,7 +55,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>17AF7DE8FCFFF8638EA112E48451ECB262799194</ManifestCertificateThumbprint>
@@ -78,7 +78,7 @@
   <ItemGroup>
     <Reference Include="Dx1Interface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Release\Dx1Interface.dll</HintPath>
+      <HintPath>Service References\Dx1Interface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -103,6 +103,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyMap.cs" />
     <Compile Include="MacroActionEditor.cs">
       <SubType>Form</SubType>
     </Compile>

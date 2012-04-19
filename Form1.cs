@@ -51,16 +51,18 @@ namespace DX1Utility
         
         private const int kMaxKeys = 50;
         private const string DefCreateProf = "(Create New Profile)";
+        private const string DefGlobalProf = "(Global)";
         private string ProfileSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\DX1Profiles\\";
         private string macroDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\DX1Profiles\\Macros\\";
         private Byte[] mKeyMap = new Byte[3 * kMaxKeys];
+        private List<KeyMap> KeyMaps = new List<KeyMap>();
         private String[] mMacroMap = new String [kMaxKeys];
         private Dictionary<String, MacroPlayer.MacroDefinition> mMacros = new Dictionary<String, MacroPlayer.MacroDefinition>();
         private MacroPlayer.MacroDefinition[] mKeyMacroSequenceMapping = new MacroPlayer.MacroDefinition[kMaxKeys];
         private String mFileName = "";
         private Profiles CurrentProfile = new Profiles();
         private List<Profiles> ProfileList;
-
+        
         // QuickKey programming state manager.
         private KeyProgrammer mKeyProgrammer;
 
@@ -154,6 +156,18 @@ namespace DX1Utility
             }
             V_Profiles.Sorted = true;
 
+            //AutoSelect Global Profile
+            //If one doesn't exist create it (For users that have run 1.1 or earlier)
+            if (!V_Profiles.Items.Contains(DefGlobalProf))
+            {
+                //No Global Profile, Create it
+                CurrentProfile = new Profiles();
+                CurrentProfile.ProfName = DefGlobalProf;
+                ProfileList.Add(CurrentProfile);
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+            }
+            SelectGlobalProfile();
+
             ProfileMenu.Popup += new EventHandler(QuickMenuPopup);
             ContextMenu1.MenuItems.Add(ProfileMenu);
             ContextMenu1.MenuItems.Add("E&xit", new EventHandler(CloseApp));
@@ -164,6 +178,23 @@ namespace DX1Utility
             appFocusCheckTimer.Interval = 1000;
             appFocusCheckTimer.Elapsed += new System.Timers.ElapsedEventHandler(appFocusCheckTimer_Elapsed);
             appFocusCheckTimer.Start();
+
+            //Initialize the DataGrid and KeyMap List
+            InitKeyMap(ref KeyMaps);
+            G_KeyMap.DataSource = KeyMaps;
+
+            G_KeyMap.AutoGenerateColumns = false;
+            G_KeyMap.Columns[0].Width = 30; //DX1Key
+            G_KeyMap.Columns[0].DataPropertyName = "Dx1Key";
+            G_KeyMap.Columns[1].Width = 35; //Type
+            G_KeyMap.Columns[1].DataPropertyName = "Type"; 
+            G_KeyMap.Columns[2].Width = 30; //Action
+            G_KeyMap.Columns[2].DataPropertyName = "Action";
+            G_KeyMap.Columns[3].Width = 50; //Description
+            G_KeyMap.Columns[3].DataPropertyName = "Description";
+
+            //G_KeyMap.Invalidate();
+
 
         }
 
@@ -179,11 +210,13 @@ namespace DX1Utility
                     if (mKeyMap[i + 1] == 3)
                         buttonText += "---" + mMacroMap[i / 3];
                     lines.Add(buttonText);
+
                 }
                 else
                 {
                     buttonText += (i/3)+1 + ".. Not Assigned";
                     lines.Add(buttonText);
+
                 }
 
             }
@@ -330,12 +363,15 @@ namespace DX1Utility
         }
 
         IntPtr lastHandle = IntPtr.Zero;
+        IntPtr SelfHandle = IntPtr.Zero;
+
         void appFocusCheckTimer_Elapsed(Object sender, System.Timers.ElapsedEventArgs e)
         {
 
             IntPtr handle = GetForegroundWindow();
 
-            if (handle != lastHandle)
+            //Do not run excesive code if App has not changed from last tick, or App is DX1Utility
+            if (handle != lastHandle && handle != SelfHandle)
             {
                 if (C_Debug.Checked) { LogDebug("New Active App detected: ", true); }
                 lastHandle = handle;
@@ -364,6 +400,10 @@ namespace DX1Utility
                             //Get ProcessName, although currently not used for anything.
                             processName = process.ProcessName;
                             if (C_Debug.Checked) { LogDebug("   processName: " + processName.ToLower()); }
+                            if (processName.ToLower().Contains("dx1utility"))
+                            {
+                                SelfHandle = handle;
+                            }
                         }
                         break;
                     }
@@ -380,9 +420,17 @@ namespace DX1Utility
                     //Profile was found, load that profile and apply Keymap
                     CurrentProfile = Searcher.ProfileSearchByPath(ProfileList, newExeName);
                     if (C_Debug.Checked) { LogDebug("   Profile Found: " + CurrentProfile.ProfName); }
-
                     LoadButtonsfromProfile(CurrentProfile.ProfName);
                     ApplyKeySet();
+                }
+                else
+                {
+                    //Profile Path not found, Select the Global Profile if current Profile wasn't manually selected
+                    if (!ProfileManuallySelected)
+                    {
+                        if (C_Debug.Checked) { LogDebug("   No Profile Found Loading " + DefGlobalProf + " Prfoile"); }
+                        SelectGlobalProfile();
+                    }
                 }
 
             }
@@ -522,6 +570,16 @@ namespace DX1Utility
         }
         
         //New Functions by Earthworm
+        bool ProfileManuallySelected = false;
+        private void SelectGlobalProfile()
+        {
+            //Function to specifically select the Global Profile
+            ProfileSearcher Searcher = new ProfileSearcher();
+
+            CurrentProfile = Searcher.ProfileSearchByName(ProfileList, DefGlobalProf);
+            LoadButtonsfromProfile(CurrentProfile.ProfName);
+
+        }
         private void QuickMenuPopup(object sender, EventArgs e)
         {
             //Populate Sub Menu with current Profiles when it is right-clicked on
@@ -564,7 +622,7 @@ namespace DX1Utility
             //Find the selected Profile and load its Keymap
             CurrentProfile = Searcher.ProfileSearchByName(ProfileList, SelectedItem);
             LoadButtonsfromProfile(CurrentProfile.ProfName);
-
+            ProfileManuallySelected = true;
         }
 
         private void LogDebug(string message, bool TimeFlag = false)
@@ -611,7 +669,7 @@ namespace DX1Utility
                 if (CurrentState != FormWindowState.Minimized)
                 {
                     //Form isn't minimized, popup message
-                    MessageBox.Show("Error loading Key Mappings for profile " + ProfileName + ". Loading Defaults.", "", MessageBoxButtons.OK);
+                    if (ProfileName != DefGlobalProf) { MessageBox.Show("Error loading Key Mappings for profile " + ProfileName + ". Loading Defaults.", "", MessageBoxButtons.OK); }
                     RebuildButtonList();
                     SaveButtonstoProfile(ProfileName);
                 }
@@ -664,6 +722,12 @@ namespace DX1Utility
             {
                 //File doesn't exist, create a new Profile List
                 List<Profiles> programset = new List<Profiles>();
+
+                //Add Default Global Profile
+                CurrentProfile = new Profiles();
+                CurrentProfile.ProfName = DefGlobalProf;
+
+                programset.Add(CurrentProfile);
                 return programset;
             }
 
@@ -694,6 +758,21 @@ namespace DX1Utility
                 name = "Macro" + (++index);
             }
             return name;
+        }
+
+        private void InitKeyMap(ref List<KeyMap> KeyMaps)
+        {
+            //Default Key Map
+            for (int i = 0; i <= kMaxKeys; i++ )
+            {
+                KeyMap NewKey = new KeyMap();
+                NewKey.Dx1Key = (byte)i;
+                NewKey.Action = 0;
+                NewKey.Action = 0;
+                NewKey.Description = "Test";
+                KeyMaps.Add(NewKey);
+            }
+
         }
 
         private void EditMacros_Click(object sender, EventArgs e)
@@ -756,6 +835,13 @@ namespace DX1Utility
             DialogResult PPropAnswer;
             bool bNewProfile = false;
             ProfileSearcher Searcher = new ProfileSearcher();
+
+            //Cannot Edit (Global) Profile
+            if (V_Profiles.Text == DefGlobalProf)
+            {
+                MessageBox.Show("Cannot Edit the Global Profile's properties", "", MessageBoxButtons.OK);
+                return;
+            }
 
             //Determine if creating a new Profile or editing an existing profile
             ProfileProperties PProp = new ProfileProperties();
@@ -827,6 +913,7 @@ namespace DX1Utility
                 //Set Current Profile to Blank
                 CurrentProfile = new Profiles();
             }
+            ProfileManuallySelected = true;
 
         }
 
@@ -848,6 +935,13 @@ namespace DX1Utility
             //Delete Profile
             DialogResult ProfConfirm;
 
+            //Cannot Edit (Global) Profile
+            if (V_Profiles.Text == DefGlobalProf)
+            {
+                MessageBox.Show("Cannot Delete the Global Profile", "", MessageBoxButtons.OK);
+                return;
+            }
+
             ProfConfirm = MessageBox.Show("Are you sure you want to delete this profile and its related Keymap (.pgm)?", "", MessageBoxButtons.YesNo);
             if (ProfConfirm == DialogResult.Yes)
             {
@@ -865,5 +959,25 @@ namespace DX1Utility
             }
 
         }
+
+        private void programToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Right-Click Menu of DataGrid, Program
+            MessageBox.Show("Programming..." + G_KeyMap.CurrentRow.Index );
+            mKeyProgrammer.Active = true;
+            //mKeyProgrammer.KeyToProgram(G_KeyMap.CurrentRow.Index);
+
+        }
+
+        private void G_KeyMap_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //Force selection of the row that was clicked on no matter which mouse button
+            if (e.RowIndex >= 0)
+            {
+                G_KeyMap.CurrentCell = G_KeyMap.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            }
+        }
+
+
     }
 }

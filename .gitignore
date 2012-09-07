@@ -3,6 +3,6 @@
 *.pfx
 Thumbs.db
 *.user
-*.sou
+*.suo
 [Bb]in*/
 [Uu]pload*/

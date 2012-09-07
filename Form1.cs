@@ -76,6 +76,14 @@ namespace DX1Utility
                     String[] TempMacros = new String[kMaxKeys];
                     UsedToSaveProgramSetv2 programset = new UsedToSaveProgramSetv2(TempKeys, TempMacros);
 
+                    //Testing to ensure app doesnt change the pgm files
+                    //string tempString = "";
+                    //for (int i = 0; i < kMaxKeys; i++)
+                    //{
+                    //    tempString = tempString + prgramsetv1.keyMap[i];
+                    //}
+
+                    
                     for (int i = 0; i < kMaxKeys; i++)
                     {
                         int offset = (i) * 3;
@@ -83,11 +91,38 @@ namespace DX1Utility
                         KeyMap NewKey = new KeyMap();
                         NewKey.Dx1Key = (byte)(i+1);
                         offset++;
+                        NewKey.Type = prgramsetv1.keyMap[offset++];
                         NewKey.Action = prgramsetv1.keyMap[offset++];
-                        NewKey.Action = prgramsetv1.keyMap[offset++];
-                        NewKey.Description = "Undefined";
+                        if (NewKey.Action == (byte)0)
+                        {
+                            NewKey.Description = "Unassigned";
+                        }
+                        else
+                        {
+                            NewKey.Description = "Keycode-" + NewKey.Action.ToString();
+                        }
                         programset.keyMaps.Add(NewKey);
                     }
+
+                    //Test code for ensuring no changes to Dx1 Code assignment
+                    //string tempString2 = "";
+                    //Byte[] tempKeyMap = new Byte[3 * kMaxKeys];
+
+                    //for (int i = 0; i < kMaxKeys; i++)
+                    //{
+                    //    int offset = (i) * 3;
+                    //    tempKeyMap[offset++] = programset.keyMaps[i].Dx1Key;
+                    //    tempKeyMap[offset++] = programset.keyMaps[i].Type;
+                    //    tempKeyMap[offset++] = programset.keyMaps[i].Action;
+
+                    //}
+
+                    //for (int i = 0; i < kMaxKeys; i++)
+                    //{
+                    //    tempString2 = tempString2 + tempKeyMap[i];
+                    //}
+
+                    //MessageBox.Show("SavedMap: " + tempString + "/r/n" + "NewMap: " + tempString2);
 
                     programset.macroMap = prgramsetv1.macroMap;
 

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace DX1Utility
 {
+    [Serializable]
     public class KeyMap
     {
         private byte _Dx1Key;
@@ -34,6 +35,23 @@ namespace DX1Utility
         {
             get { return _Description; }
             set { _Description = value; }
+        }
+
+        public bool AssignSingleKey(int KeyCode)
+        {
+            //Used to Set Type and Action from the KeyTuple
+            byte[] KeyTuple;
+
+            KeyTuple = KeyConversionTable.KeyPairConversionTable[KeyCode];
+
+            if (KeyTuple != null)
+            {
+                _Type = KeyTuple[0];
+                _Action = KeyTuple[1];
+                return true;
+            }
+            return false;
+
         }
 
         public byte[] KeyMapByteArray()

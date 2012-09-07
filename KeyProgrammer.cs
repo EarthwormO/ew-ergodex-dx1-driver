@@ -68,7 +68,7 @@ namespace DX1Interface
                                  };
 
             Byte[] specialMappings = { 0xa2, 0xa0, 0xa4, 0x5b,
-                                       0xa3, 0xa1, 0xa5, 0x00
+                                       0xa3, 0xa1, 0xa5, 0x5c
                                      };
 
             // Alloc the table
@@ -117,8 +117,6 @@ namespace DX1Interface
         {
             return KeyPairConversionTable[inputCode];
         }
-
-
 
 
         public bool KeyDown(int e)

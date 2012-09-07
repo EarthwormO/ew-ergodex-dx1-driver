@@ -23,17 +23,19 @@ namespace DX1Utility
 
             public Byte[] keyMap;
             public String[] macroMap;
+            public KeyMap[] keyMaps;
             public UsedToSaveProgramSet(Byte[] keys, String[] macros)
             {
                 keyMap = keys;
                 macroMap = macros;            
             }
-                       
+
             public static UsedToSaveProgramSet Read(System.IO.Stream stream)
             {
 
                 IFormatter formatter = new BinaryFormatter();
                 int version = (Int32)formatter.Deserialize(stream);
+                
                 UsedToSaveProgramSet programSet = (UsedToSaveProgramSet)formatter.Deserialize(stream);
                 return programSet;
 
@@ -45,7 +47,67 @@ namespace DX1Utility
                 formatter.Serialize(stream, VERSION);
                 formatter.Serialize(stream, programSet);
             }
+
         }
+
+        [Serializable]
+        public class UsedToSaveProgramSetv2
+        {
+            const int VERSION = 2;
+
+            public String[] macroMap;
+            public List<KeyMap> keyMaps;
+            public UsedToSaveProgramSetv2(List<KeyMap> keys, String[] macros)
+            {
+                keyMaps = keys;
+                macroMap = macros;
+            }
+
+            public static UsedToSaveProgramSetv2 Read(System.IO.Stream stream)
+            {
+
+                IFormatter formatter = new BinaryFormatter();
+                int version = (Int32)formatter.Deserialize(stream);
+
+                if (version == 1) {
+                    //This is a version 1 file Convert it to a Version 2 file
+                    UsedToSaveProgramSet prgramsetv1 = (UsedToSaveProgramSet)formatter.Deserialize(stream);
+                    List<KeyMap> TempKeys = new List<KeyMap>();
+                    String[] TempMacros = new String[kMaxKeys];
+                    UsedToSaveProgramSetv2 programset = new UsedToSaveProgramSetv2(TempKeys, TempMacros);
+
+                    for (int i = 0; i < kMaxKeys; i++)
+                    {
+                        int offset = (i) * 3;
+                        
+                        KeyMap NewKey = new KeyMap();
+                        NewKey.Dx1Key = (byte)(i+1);
+                        offset++;
+                        NewKey.Action = prgramsetv1.keyMap[offset++];
+                        NewKey.Action = prgramsetv1.keyMap[offset++];
+                        NewKey.Description = "Undefined";
+                        programset.keyMaps.Add(NewKey);
+                    }
+
+                    programset.macroMap = prgramsetv1.macroMap;
+
+                    return programset;
+                    
+                }
+                
+                UsedToSaveProgramSetv2 programSet = (UsedToSaveProgramSetv2)formatter.Deserialize(stream);
+                return programSet;
+            }
+
+            public static void Write(System.IO.Stream stream, UsedToSaveProgramSetv2 programSet)
+            {
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, VERSION);
+                formatter.Serialize(stream, programSet);
+            }
+
+        }
+
 
         private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro" };
         
@@ -118,7 +180,6 @@ namespace DX1Utility
             macroTimer.AutoReset = false;
             macroTimer.Elapsed += new System.Timers.ElapsedEventHandler(macroTimer_Elapsed);
 
-            RebuildButtonList();
             RebuildMacroList();
             ControlBox = true;
 
@@ -161,12 +222,35 @@ namespace DX1Utility
             if (!V_Profiles.Items.Contains(DefGlobalProf))
             {
                 //No Global Profile, Create it
+                InitKeyMap(ref KeyMaps);
                 CurrentProfile = new Profiles();
                 CurrentProfile.ProfName = DefGlobalProf;
                 ProfileList.Add(CurrentProfile);
                 SaveButtonstoProfile(CurrentProfile.ProfName);
+                SaveProfiles();
             }
             SelectGlobalProfile();
+
+
+            //Initialize the DataGrid and KeyMap List
+            G_KeyMap.AutoGenerateColumns = false;
+            G_KeyMap.DataSource = KeyMaps;
+
+            //Add Dx1Key Column
+            DataGridViewTextBoxColumn DxColumn = new DataGridViewTextBoxColumn();
+            DxColumn.Width = 30;
+            DxColumn.DataPropertyName = "Dx1Key";
+            DxColumn.HeaderText = "Key";
+            DxColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            G_KeyMap.Columns.Add(DxColumn);
+
+            //Add Description Column
+            DataGridViewTextBoxColumn DescColumn = new DataGridViewTextBoxColumn();
+            DescColumn.Width = 70;
+            DescColumn.DataPropertyName = "Description";
+            DescColumn.HeaderText = "Description";
+            G_KeyMap.Columns.Add(DescColumn);
+
 
             ProfileMenu.Popup += new EventHandler(QuickMenuPopup);
             ContextMenu1.MenuItems.Add(ProfileMenu);
@@ -179,57 +263,8 @@ namespace DX1Utility
             appFocusCheckTimer.Elapsed += new System.Timers.ElapsedEventHandler(appFocusCheckTimer_Elapsed);
             appFocusCheckTimer.Start();
 
-            //Initialize the DataGrid and KeyMap List
-            InitKeyMap(ref KeyMaps);
-            G_KeyMap.DataSource = KeyMaps;
-
-            G_KeyMap.AutoGenerateColumns = false;
-            G_KeyMap.Columns[0].Width = 30; //DX1Key
-            G_KeyMap.Columns[0].DataPropertyName = "Dx1Key";
-            G_KeyMap.Columns[1].Width = 35; //Type
-            G_KeyMap.Columns[1].DataPropertyName = "Type"; 
-            G_KeyMap.Columns[2].Width = 30; //Action
-            G_KeyMap.Columns[2].DataPropertyName = "Action";
-            G_KeyMap.Columns[3].Width = 50; //Description
-            G_KeyMap.Columns[3].DataPropertyName = "Description";
-
-            //G_KeyMap.Invalidate();
 
 
-        }
-
-        void RebuildButtonList()
-        {
-            List<String> lines = new List<String>();
-            for (int i = 0; i < kMaxKeys * 3; i += 3)
-            {
-                String buttonText= "";
-                if (mKeyMap[i] != 0)
-                {
-                    buttonText += mKeyMap[i] + ".." + sKeyBindings[mKeyMap[i + 1]] + "-" + mKeyMap[i + 2];
-                    if (mKeyMap[i + 1] == 3)
-                        buttonText += "---" + mMacroMap[i / 3];
-                    lines.Add(buttonText);
-
-                }
-                else
-                {
-                    buttonText += (i/3)+1 + ".. Not Assigned";
-                    lines.Add(buttonText);
-
-                }
-
-            }
-            ButtonList.Lines = lines.ToArray();
-
-            if (mKeyProgrammer.KeyToProgram == KeyProgrammer.kNotActive)
-                button1.Text = "Program";
-            else if (mKeyProgrammer.KeyToProgram == 0)
-                button1.Text = "Programming";
-            else
-                button1.Text = "Key - " + mKeyProgrammer.KeyToProgram;
-
-            Invalidate();
         }
 
         void RebuildMacroList()
@@ -441,8 +476,8 @@ namespace DX1Utility
             if (mDevHandle != IntPtr.Zero)
                 mDX1Hardware.TestMode(mDevHandle);
 
-            RebuildButtonList();
             RebuildMacroList();
+            //ReBuildKeyMap();
             V_Profiles.Text = CurrentProfile.ProfName;
         }
         
@@ -471,7 +506,6 @@ namespace DX1Utility
         protected override void OnDeactivate(System.EventArgs e)
         {
             ApplyKeySet();
-            RebuildButtonList();
         }
 
         protected override void OnResize(System.EventArgs e)
@@ -507,8 +541,10 @@ namespace DX1Utility
                         keyCode++;          // RHS version
                 }
 
-                if (mKeyProgrammer.KeyDown(keyCode))
-                    RebuildButtonList();
+                //Need to recreate this functionality from the ground up for the new Grid
+                //if (mKeyProgrammer.KeyDown(keyCode))
+                //    RebuildButtonList();
+                
             }
             else
             {
@@ -555,7 +591,7 @@ namespace DX1Utility
                             if (mKeyProgrammer.DX1KeyDown(key))
                             {
                                 MacroList.ClearSelected();
-                                RebuildButtonList();
+                                //RebuildButtonList();
                             }
                             else
                                 DoSomethingWithMacroKeys(vol.dbch_data);
@@ -643,23 +679,22 @@ namespace DX1Utility
         
         private void SaveButtonstoProfile(string ProfileName)
         {
-            //Save the Keymap to .rgm in the Profile folder
+            //Save the Keymap to .pgm in the Profile folder
             System.IO.FileStream fs = new System.IO.FileStream(ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
-            UsedToSaveProgramSet temp = new UsedToSaveProgramSet(mKeyMap, mMacroMap);
-            UsedToSaveProgramSet.Write(fs, temp);
+            UsedToSaveProgramSetv2 temp = new UsedToSaveProgramSetv2(KeyMaps , mMacroMap);
+            UsedToSaveProgramSetv2.Write(fs, temp);
             fs.Close();
         }
 
         private void LoadButtonsfromProfile(string ProfileName)
         {
-            //Load the Keymap fromt he .pgm file for this profile
+            //Load the Keymap from the .pgm file for this profile
             if (System.IO.File.Exists(ProfileSavePath + ProfileName + ".pgm"))
             {
                 System.IO.FileStream fs = new System.IO.FileStream(ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read);
                 LoadFromStream(fs);
                 mFileName = fs.Name;
                 fs.Close();
-                RebuildButtonList();
                 if (C_Debug.Checked) { LogDebug("Profile Keyset Loaded from profile: " + ProfileName, true); }
             }
             else
@@ -670,7 +705,6 @@ namespace DX1Utility
                 {
                     //Form isn't minimized, popup message
                     if (ProfileName != DefGlobalProf) { MessageBox.Show("Error loading Key Mappings for profile " + ProfileName + ". Loading Defaults.", "", MessageBoxButtons.OK); }
-                    RebuildButtonList();
                     SaveButtonstoProfile(ProfileName);
                 }
                 else
@@ -733,19 +767,43 @@ namespace DX1Utility
 
         }
 
+        private void ReBuildKeyMap()
+        {
+            //Take the current KeyMaps and create the KeyMap used to program the keyboard
+            //Step through the List KeyMaps generating the ByteArray KeyMap
+            for (int i = 0; i < kMaxKeys; i++ )
+            {
+                int offset = (i) * 3;
+                mKeyMap[offset++] = KeyMaps[i].Dx1Key ;
+                mKeyMap[offset++] = KeyMaps[i].Type;
+                mKeyMap[offset++] = KeyMaps[i].Action;
+
+            }
+
+            //Refresh the DataGridView
+            if (!this.G_KeyMap.InvokeRequired)
+            {
+                G_KeyMap.AutoGenerateColumns = false;
+                G_KeyMap.DataSource = null;
+                G_KeyMap.DataSource = KeyMaps;
+            }
+
+        }
+
         // Various Click things
         private void button1_Click(object sender, EventArgs e)
         {          
             mKeyProgrammer.Active = !mKeyProgrammer.Active;
             if (!mKeyProgrammer.Active) { SaveButtonstoProfile(CurrentProfile.ProfName); }
-            RebuildButtonList();
         }
         
         private void LoadFromStream(System.IO.Stream inStream)
         {
-            UsedToSaveProgramSet temp = UsedToSaveProgramSet.Read(inStream);
-            mKeyMap = temp.keyMap;
+            UsedToSaveProgramSetv2 temp = UsedToSaveProgramSetv2.Read(inStream);
+            
+            KeyMaps = temp.keyMaps;
             mMacroMap = temp.macroMap;
+            ReBuildKeyMap();
             mKeyProgrammer = new KeyProgrammer(ref mKeyMap, ref mMacroMap);
         }
 
@@ -763,13 +821,15 @@ namespace DX1Utility
         private void InitKeyMap(ref List<KeyMap> KeyMaps)
         {
             //Default Key Map
-            for (int i = 0; i <= kMaxKeys; i++ )
+            int TempKey;
+            for (int i = 0; i < kMaxKeys; i++ )
             {
+                TempKey = i+1;
                 KeyMap NewKey = new KeyMap();
-                NewKey.Dx1Key = (byte)i;
+                NewKey.Dx1Key = (byte)(TempKey);
                 NewKey.Action = 0;
                 NewKey.Action = 0;
-                NewKey.Description = "Test";
+                NewKey.Description = "Unassigned";
                 KeyMaps.Add(NewKey);
             }
 
@@ -816,7 +876,6 @@ namespace DX1Utility
                 if (index != 0 && index != -1)
                 {
                     mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString());
-                    RebuildButtonList();
                 }
 
             }
@@ -907,6 +966,7 @@ namespace DX1Utility
                 //Sets Current Profile to whatever Profile was selected from the list
                 CurrentProfile = Searcher.ProfileSearchByName(ProfileList, V_Profiles.SelectedItem.ToString());
                 LoadButtonsfromProfile(CurrentProfile.ProfName);
+                G_KeyMap.Invalidate();
             }
             else
             {
@@ -955,17 +1015,39 @@ namespace DX1Utility
                 V_Profiles.Items.Remove(V_Profiles.Text);
                 SaveProfiles();
                 V_Profiles.Text = DefCreateProf;
-                
+                G_KeyMap.Invalidate();
+
             }
 
         }
 
         private void programToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Run Key Programming Wizard
+            DialogResult KeyWizardAnswer;
+            byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index+1);
+
             //Right-Click Menu of DataGrid, Program
-            MessageBox.Show("Programming..." + G_KeyMap.CurrentRow.Index );
-            mKeyProgrammer.Active = true;
-            //mKeyProgrammer.KeyToProgram(G_KeyMap.CurrentRow.Index);
+            ProgramWizard KeyWizard = new ProgramWizard();
+            KeyWizard.InitProgramWizard((byte)CurrentKey);
+            KeyWizardAnswer = KeyWizard.ShowDialog();
+
+            if (KeyWizardAnswer == DialogResult.OK)
+            {
+                //Wizard completed with "Finish", reprogram this key
+                KeyMaps[CurrentKey-1] = KeyWizard.WizardResult();
+                
+                //DX1 Single Key Program
+                int offset = (CurrentKey - 1) * 3;
+                mKeyMap[offset++] = CurrentKey;
+                mKeyMap[offset++] = KeyMaps[CurrentKey].Type;
+                mKeyMap[offset++] = KeyMaps[CurrentKey].Action;
+                
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+                ReBuildKeyMap();
+
+            }
+
 
         }
 
@@ -978,6 +1060,37 @@ namespace DX1Utility
             }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string tempString = "";
+            for (int i = 0; i < kMaxKeys; i++)
+            {
+                tempString = tempString + mKeyMap[i];
+            }
+            
+            MessageBox.Show(tempString);
+
+            //if (System.IO.File.Exists(ProfileSavePath + "(Global).pgm"))
+            //{
+            //    System.IO.File.Delete(ProfileSavePath + "(Global).pgm");
+            //}
+
+            //ProfileList.RemoveAll((x) => x.ProfName == V_Profiles.Text);
+            //V_Profiles.Items.Remove(V_Profiles.Text);
+            //SaveProfiles();
+
+        }
+
+        private void G_KeyMap_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            //Sets Differing formatting based on Cell contents
+            if (e.Value == "Unassigned")
+            {
+                //Grey out text if unnassigned
+                e.CellStyle.ForeColor = Color.Gray;
+            }
+            
+        }
 
     }
 }

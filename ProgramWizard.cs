@@ -3,7 +3,7 @@
 //using System.ComponentModel;
 //using System.Data;
 //using System.Drawing;
-//using System.Linq;
+using System.Linq;
 //using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -17,7 +17,7 @@ namespace DX1Utility
         //Tab Order when clicking Next
         static int[] SingleKey = new int[4] {0, 1, 5, 6};
         static int[] MultiKey = new int[4] { 0, 2, 5, 6 };
-        static int[] MacroKey = new int[4] { 0, 3, 5, 6 };
+        static int[] MacroKey = new int[3] { 0, 3, 6 };
         static int[] SpecialKey = new int[3] { 0, 4, 6 };
 
         private int[] CurrentTabOrder;
@@ -33,12 +33,53 @@ namespace DX1Utility
         {
             CurrentKeyMap.Dx1Key = Dx1Key;
             T_DXKey.Text = Dx1Key.ToString();
+            BuildMacroList();
+        }
+
+        public void InitKeyProperties(KeyMap CurrentKey)
+        {
+            //Assign the CurrentKeyMap to the entire KeyMap passed in
+            CurrentKeyMap = CurrentKey;
+            
+            //Go straight to the Confimation Page and populate it
+            TB_Wizard.SelectedIndex = 6;
+            T_Conf_Type.Text = "Ignore me";
+            T_Conf_Desc.Text = CurrentKeyMap.Description;
+            T_Conf_Actual.Text = "Ignore me";
+            //Enable the textboxes
+
+            BuildMacroList();
         }
 
         public KeyMap WizardResult()
         {
             //Return the resulting KeyMap
             return CurrentKeyMap;
+        }
+
+        private void BuildMacroList()
+        {
+            //Build the Macro list
+            MacroList.Items.Clear();
+            //MacroList.Items.Add("NEW MACRO");
+
+            // Add the files from the directory
+            if (!System.IO.Directory.Exists(Globals.macroDir))
+                System.IO.Directory.CreateDirectory(Globals.macroDir);
+
+            String[] files = System.IO.Directory.GetFiles(Globals.macroDir, "*.mac");
+            foreach (String name in files)
+            {
+                System.IO.FileStream stream = new System.IO.FileStream(name, System.IO.FileMode.Open);
+                MacroPlayer.MacroDefinition macro = MacroPlayer.MacroDefinition.Read(stream);
+                stream.Close();
+
+                String[] pathComponents = name.Split('\\');
+                pathComponents = pathComponents.Last().Split('.');
+                macro.name = pathComponents.First();
+
+                MacroList.Items.Add(macro.name);
+            }
         }
 
         private void B_Next_Click(object sender, EventArgs e)
@@ -81,6 +122,12 @@ namespace DX1Utility
                         CurrentIndex++;
                         break;
                     }
+                case 3:
+                    {
+                        //Leaving Macro Tab
+                        CurrentIndex++;
+                        break;
+                    }
                 case 5:
                     {
                         //Leaving Description tab
@@ -102,7 +149,7 @@ namespace DX1Utility
             
             if (TB_Wizard.SelectedIndex == 6)
                 {
-                    //On Confirmation page or Change buttons
+                    //On Confirmation page Change buttons
                     B_Next.Enabled = false;
                     B_OK.Enabled = true;
                 }
@@ -176,8 +223,17 @@ namespace DX1Utility
 
         }
 
-        private void T_Description_Validated(object sender, EventArgs e)
+        private void MacroList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            //The Selection within the Macro List has changed
+            if(MacroList.SelectedIndex >= 0)
+            {
+                CurrentKeyMap.Action = 0;
+                CurrentKeyMap.Type = 0x3;
+                CurrentKeyMap.Description = MacroList.SelectedItem.ToString();
+                T_Description.Text = CurrentKeyMap.Description;
+                T_Conf_Desc.Text = CurrentKeyMap.Description;
+            }
 
         }
 

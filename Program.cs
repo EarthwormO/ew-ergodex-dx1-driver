@@ -21,10 +21,20 @@ namespace DX1Utility
         static void Main()
         {
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Form1 form = new Form1();
-            Application.Run(form);
+            using (Mutex mutex = new Mutex(false, "Global\\ewDx1Utility"))
+            {
+                if (!mutex.WaitOne(0, false))
+                {
+                    MessageBox.Show("Dx1Utility is already running","Error");
+                    return;
+                }
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Form1 form = new Form1();
+                Application.Run(form);
+            }
+
         }
 
     }

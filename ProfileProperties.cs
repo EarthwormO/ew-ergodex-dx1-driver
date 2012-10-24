@@ -22,6 +22,7 @@ namespace DX1Utility
             T_ProfileName.Text = CurrentProfile.ProfName;
             T_ProfilePath.Text = CurrentProfile.ProfPath;
             C_Enabled.Checked = CurrentProfile.ProfEnabled;
+            C_QuickMenu.Checked = CurrentProfile.QuickMenu;
             if (CurrentProfile.ProfName != "New") { T_ProfileName.Enabled = false; }
         }
         

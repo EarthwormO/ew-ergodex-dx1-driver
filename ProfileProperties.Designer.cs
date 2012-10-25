@@ -43,7 +43,7 @@
             // 
             this.T_ProfileName.Location = new System.Drawing.Point(108, 15);
             this.T_ProfileName.Name = "T_ProfileName";
-            this.T_ProfileName.Size = new System.Drawing.Size(122, 20);
+            this.T_ProfileName.Size = new System.Drawing.Size(254, 20);
             this.T_ProfileName.TabIndex = 0;
             // 
             // label1

@@ -29,8 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.ButtonList = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.B_QuickPrg = new System.Windows.Forms.Button();
             this.EditMacros = new System.Windows.Forms.Button();
             this.MacroList = new System.Windows.Forms.ListBox();
             this.V_Profiles = new System.Windows.Forms.ComboBox();
@@ -42,31 +41,21 @@
             this.CM_KeyMap = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button2 = new System.Windows.Forms.Button();
+            this.PropertiesStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.G_KeyMap)).BeginInit();
             this.CM_KeyMap.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ButtonList
+            // B_QuickPrg
             // 
-            this.ButtonList.Location = new System.Drawing.Point(12, 34);
-            this.ButtonList.Multiline = true;
-            this.ButtonList.Name = "ButtonList";
-            this.ButtonList.ReadOnly = true;
-            this.ButtonList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ButtonList.Size = new System.Drawing.Size(178, 408);
-            this.ButtonList.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(196, 170);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(89, 94);
-            this.button1.TabIndex = 0;
-            this.button1.TabStop = false;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.B_QuickPrg.Location = new System.Drawing.Point(195, 426);
+            this.B_QuickPrg.Name = "B_QuickPrg";
+            this.B_QuickPrg.Size = new System.Drawing.Size(89, 31);
+            this.B_QuickPrg.TabIndex = 0;
+            this.B_QuickPrg.TabStop = false;
+            this.B_QuickPrg.Text = "Quick Program";
+            this.B_QuickPrg.UseVisualStyleBackColor = true;
+            this.B_QuickPrg.Click += new System.EventHandler(this.button1_Click);
             // 
             // EditMacros
             // 
@@ -81,7 +70,7 @@
             // MacroList
             // 
             this.MacroList.FormattingEnabled = true;
-            this.MacroList.Location = new System.Drawing.Point(449, 34);
+            this.MacroList.Location = new System.Drawing.Point(450, 37);
             this.MacroList.Name = "MacroList";
             this.MacroList.Size = new System.Drawing.Size(148, 407);
             this.MacroList.TabIndex = 8;
@@ -90,9 +79,10 @@
             // V_Profiles
             // 
             this.V_Profiles.FormattingEnabled = true;
-            this.V_Profiles.Location = new System.Drawing.Point(75, 9);
+            this.V_Profiles.Location = new System.Drawing.Point(76, 10);
             this.V_Profiles.Name = "V_Profiles";
-            this.V_Profiles.Size = new System.Drawing.Size(121, 21);
+            this.V_Profiles.Size = new System.Drawing.Size(254, 21);
+            this.V_Profiles.Sorted = true;
             this.V_Profiles.TabIndex = 9;
             this.V_Profiles.SelectionChangeCommitted += new System.EventHandler(this.V_Profiles_SelectionChangeCommitted);
             // 
@@ -108,7 +98,7 @@
             // 
             // B_EditProfile
             // 
-            this.B_EditProfile.Location = new System.Drawing.Point(202, 8);
+            this.B_EditProfile.Location = new System.Drawing.Point(336, 8);
             this.B_EditProfile.Name = "B_EditProfile";
             this.B_EditProfile.Size = new System.Drawing.Size(26, 23);
             this.B_EditProfile.TabIndex = 11;
@@ -119,7 +109,7 @@
             // C_Debug
             // 
             this.C_Debug.AutoSize = true;
-            this.C_Debug.Location = new System.Drawing.Point(517, 9);
+            this.C_Debug.Location = new System.Drawing.Point(565, 12);
             this.C_Debug.Name = "C_Debug";
             this.C_Debug.Size = new System.Drawing.Size(58, 17);
             this.C_Debug.TabIndex = 13;
@@ -129,7 +119,7 @@
             // 
             // B_Delete
             // 
-            this.B_Delete.Location = new System.Drawing.Point(234, 8);
+            this.B_Delete.Location = new System.Drawing.Point(368, 8);
             this.B_Delete.Name = "B_Delete";
             this.B_Delete.Size = new System.Drawing.Size(51, 23);
             this.B_Delete.TabIndex = 14;
@@ -143,11 +133,11 @@
             this.G_KeyMap.AllowUserToDeleteRows = false;
             this.G_KeyMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.G_KeyMap.ContextMenuStrip = this.CM_KeyMap;
-            this.G_KeyMap.Location = new System.Drawing.Point(295, 34);
+            this.G_KeyMap.Location = new System.Drawing.Point(20, 37);
             this.G_KeyMap.Name = "G_KeyMap";
             this.G_KeyMap.RowHeadersVisible = false;
             this.G_KeyMap.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.G_KeyMap.Size = new System.Drawing.Size(122, 407);
+            this.G_KeyMap.Size = new System.Drawing.Size(169, 420);
             this.G_KeyMap.TabIndex = 15;
             this.G_KeyMap.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.G_KeyMap_CellFormatting);
             this.G_KeyMap.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.G_KeyMap_CellMouseDown);
@@ -156,57 +146,54 @@
             // 
             this.CM_KeyMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.programToolStripMenuItem,
-            this.clearToolStripMenuItem});
+            this.clearToolStripMenuItem,
+            this.PropertiesStripMenuItem});
             this.CM_KeyMap.Name = "CM_KeyMap";
-            this.CM_KeyMap.Size = new System.Drawing.Size(115, 48);
+            this.CM_KeyMap.Size = new System.Drawing.Size(128, 70);
             // 
             // programToolStripMenuItem
             // 
             this.programToolStripMenuItem.Name = "programToolStripMenuItem";
-            this.programToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.programToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.programToolStripMenuItem.Text = "Program";
             this.programToolStripMenuItem.Click += new System.EventHandler(this.programToolStripMenuItem_Click);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
-            // button2
+            // PropertiesStripMenuItem
             // 
-            this.button2.Location = new System.Drawing.Point(196, 321);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(89, 94);
-            this.button2.TabIndex = 16;
-            this.button2.TabStop = false;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.PropertiesStripMenuItem.Name = "PropertiesStripMenuItem";
+            this.PropertiesStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.PropertiesStripMenuItem.Text = "Properties";
+            this.PropertiesStripMenuItem.Click += new System.EventHandler(this.PropertiesStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(635, 497);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.G_KeyMap);
-            this.Controls.Add(this.B_Delete);
-            this.Controls.Add(this.C_Debug);
-            this.Controls.Add(this.B_EditProfile);
+            this.ClientSize = new System.Drawing.Size(635, 494);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.V_Profiles);
+            this.Controls.Add(this.G_KeyMap);
             this.Controls.Add(this.MacroList);
+            this.Controls.Add(this.C_Debug);
+            this.Controls.Add(this.B_Delete);
+            this.Controls.Add(this.V_Profiles);
+            this.Controls.Add(this.B_EditProfile);
             this.Controls.Add(this.EditMacros);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ButtonList);
+            this.Controls.Add(this.B_QuickPrg);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(745, 526);
             this.MinimumSize = new System.Drawing.Size(645, 526);
             this.Name = "Form1";
-            this.Text = "DX1Utility";
+            this.Text = "Dx1Utility";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.G_KeyMap)).EndInit();
             this.CM_KeyMap.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -216,8 +203,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox ButtonList;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button B_QuickPrg;
         private System.Windows.Forms.Button EditMacros;
         private System.Windows.Forms.ListBox MacroList;
         private System.Windows.Forms.ComboBox V_Profiles;
@@ -229,7 +215,7 @@
         private System.Windows.Forms.ContextMenuStrip CM_KeyMap;
         private System.Windows.Forms.ToolStripMenuItem programToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ToolStripMenuItem PropertiesStripMenuItem;
     }
 }
 

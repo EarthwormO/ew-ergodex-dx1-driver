@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DX1Interface
+namespace DX1Utility
 {
     public class KeyProgrammer
     {
@@ -12,13 +12,27 @@ namespace DX1Interface
         Byte[] mKeyMap;
        String[] mMacroMap;
 
-        public KeyProgrammer(ref Byte[] keyMap, ref String[] macros)
+       public KeyProgrammer(ref List<KeyMap> KeyMapTest, ref String[] macros)
         {
-            mKeyMap = keyMap;
+            mKeyMap = GetKeyMap(KeyMapTest);
             mMacroMap = macros;
             InitKeyPairConversionTable();
         }
 
+        public byte[] GetKeyMap(List<KeyMap> KeyMapTest)
+        {
+            //Return the Byte array of the key map fromt he Profiles
+            byte[] TempKeymap = new Byte[3 * 50];
+            int Offset = 0;
+
+            foreach (KeyMap DxKey in KeyMapTest)
+            {
+                DxKey.KeyMapByteArray().CopyTo(TempKeymap, Offset);
+                Offset = Offset + 3;
+            }
+
+            return TempKeymap;
+        }
 
         private bool active = false;
         private int keyToProgram = 0;
@@ -119,35 +133,35 @@ namespace DX1Interface
         }
 
 
-        public bool KeyDown(int e)
-        {
-            if (active && keyToProgram != 0)
-            {
-                Byte[] keyTuple = ConvertToKeyTuple(e);
-                if (keyTuple != null)
-                {
-                    int offset = (keyToProgram - 1) * 3;
-                    mKeyMap[offset++] = (Byte)keyToProgram;
-                    mKeyMap[offset++] = keyTuple[0];
-                    mKeyMap[offset++] = keyTuple[1];
-                    keyToProgram = 0;
-                    return true;
-                }
-            }
-            return false;
-        }
+        //public bool KeyDown(int e)
+        //{
+        //    if (active && keyToProgram != 0)
+        //    {
+        //        Byte[] keyTuple = ConvertToKeyTuple(e);
+        //        if (keyTuple != null)
+        //        {
+        //            int offset = (keyToProgram - 1) * 3;
+        //            mKeyMap[offset++] = (Byte)keyToProgram;
+        //            mKeyMap[offset++] = keyTuple[0];
+        //            mKeyMap[offset++] = keyTuple[1];
+        //            keyToProgram = 0;
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
 
         public bool AssignMacro(String macroName)
         {
             if (active && keyToProgram != 0)
             {
-                int offset = (keyToProgram - 1) * 3;
-                mKeyMap[offset++] = (Byte)keyToProgram;
-                mKeyMap[offset++] = 3;
-                mKeyMap[offset++] = 0;
+                //int offset = (keyToProgram - 1) * 3;
+                //mKeyMap[offset++] = (Byte)keyToProgram;
+                //mKeyMap[offset++] = 3;
+                //mKeyMap[offset++] = 0;
 
-                mMacroMap[keyToProgram-1] = macroName;
-                keyToProgram = 0;
+                //mMacroMap[keyToProgram - 1] = macroName;
+                //keyToProgram = 0;
                 return true;
             }
             return false;
@@ -157,17 +171,19 @@ namespace DX1Interface
         {
             if (active && key != 0)
             {
+                //Code to Quick Program
+                keyToProgram = key;
                 // allow unbinds
-                if (keyToProgram == key)
-                {
-                    int offset = (keyToProgram - 1) * 3;
-                    mKeyMap[offset++] = 0;
-                    mKeyMap[offset++] = 0;
-                    mKeyMap[offset++] = 0;
-                    keyToProgram = 0;
-                }
-                else
-                    keyToProgram = key;
+                //if (keyToProgram == key)
+                //{
+                //    int offset = (keyToProgram - 1) * 3;
+                //    mKeyMap[offset++] = 0;
+                //    mKeyMap[offset++] = 0;
+                //    mKeyMap[offset++] = 0;
+                //    keyToProgram = 0;
+                //}
+                //else
+                //    keyToProgram = key;
 
                 return true;
             }

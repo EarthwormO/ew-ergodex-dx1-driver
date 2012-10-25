@@ -49,6 +49,8 @@
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage11 = new System.Windows.Forms.TabPage();
+            this.label15 = new System.Windows.Forms.Label();
+            this.MacroList = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPage12 = new System.Windows.Forms.TabPage();
             this.label6 = new System.Windows.Forms.Label();
@@ -57,13 +59,13 @@
             this.T_Description = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.tabPage14 = new System.Windows.Forms.TabPage();
+            this.T_Conf_Actual = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.T_Conf_Desc = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.T_Conf_Type = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.T_Conf_Actual = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
             this.TB_Wizard.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -299,6 +301,8 @@
             // 
             // tabPage11
             // 
+            this.tabPage11.Controls.Add(this.label15);
+            this.tabPage11.Controls.Add(this.MacroList);
             this.tabPage11.Controls.Add(this.label5);
             this.tabPage11.Location = new System.Drawing.Point(4, 22);
             this.tabPage11.Name = "tabPage11";
@@ -306,6 +310,25 @@
             this.tabPage11.TabIndex = 3;
             this.tabPage11.Text = "Macro";
             this.tabPage11.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(7, 33);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(253, 13);
+            this.label15.TabIndex = 11;
+            this.label15.Text = "Select the Macro you want to use from the list below";
+            // 
+            // MacroList
+            // 
+            this.MacroList.FormattingEnabled = true;
+            this.MacroList.Location = new System.Drawing.Point(10, 49);
+            this.MacroList.Name = "MacroList";
+            this.MacroList.Size = new System.Drawing.Size(148, 238);
+            this.MacroList.TabIndex = 10;
+            this.MacroList.SelectedIndexChanged += new System.EventHandler(this.MacroList_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -397,6 +420,25 @@
             this.tabPage14.Text = "Confirm";
             this.tabPage14.UseVisualStyleBackColor = true;
             // 
+            // T_Conf_Actual
+            // 
+            this.T_Conf_Actual.BackColor = System.Drawing.SystemColors.Control;
+            this.T_Conf_Actual.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.T_Conf_Actual.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.T_Conf_Actual.Location = new System.Drawing.Point(76, 59);
+            this.T_Conf_Actual.Name = "T_Conf_Actual";
+            this.T_Conf_Actual.Size = new System.Drawing.Size(123, 20);
+            this.T_Conf_Actual.TabIndex = 15;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(7, 62);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(61, 13);
+            this.label14.TabIndex = 14;
+            this.label14.Text = "Actual Key:";
+            // 
             // T_Conf_Desc
             // 
             this.T_Conf_Desc.BackColor = System.Drawing.SystemColors.Control;
@@ -445,25 +487,6 @@
             this.label8.Size = new System.Drawing.Size(111, 20);
             this.label8.TabIndex = 9;
             this.label8.Text = "Confirmation";
-            // 
-            // T_Conf_Actual
-            // 
-            this.T_Conf_Actual.BackColor = System.Drawing.SystemColors.Control;
-            this.T_Conf_Actual.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.T_Conf_Actual.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.T_Conf_Actual.Location = new System.Drawing.Point(76, 59);
-            this.T_Conf_Actual.Name = "T_Conf_Actual";
-            this.T_Conf_Actual.Size = new System.Drawing.Size(123, 20);
-            this.T_Conf_Actual.TabIndex = 15;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 62);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(61, 13);
-            this.label14.TabIndex = 14;
-            this.label14.Text = "Actual Key:";
             // 
             // ProgramWizard
             // 
@@ -543,5 +566,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox T_Conf_Actual;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ListBox MacroList;
     }
 }

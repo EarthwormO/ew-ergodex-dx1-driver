@@ -104,26 +104,6 @@ namespace DX1Utility
                         programset.keyMaps.Add(NewKey);
                     }
 
-                    //Test code for ensuring no changes to Dx1 Code assignment
-                    //string tempString2 = "";
-                    //Byte[] tempKeyMap = new Byte[3 * kMaxKeys];
-
-                    //for (int i = 0; i < kMaxKeys; i++)
-                    //{
-                    //    int offset = (i) * 3;
-                    //    tempKeyMap[offset++] = programset.keyMaps[i].Dx1Key;
-                    //    tempKeyMap[offset++] = programset.keyMaps[i].Type;
-                    //    tempKeyMap[offset++] = programset.keyMaps[i].Action;
-
-                    //}
-
-                    //for (int i = 0; i < kMaxKeys; i++)
-                    //{
-                    //    tempString2 = tempString2 + tempKeyMap[i];
-                    //}
-
-                    //MessageBox.Show("SavedMap: " + tempString + "/r/n" + "NewMap: " + tempString2);
-
                     programset.macroMap = prgramsetv1.macroMap;
 
                     return programset;
@@ -145,13 +125,11 @@ namespace DX1Utility
 
 
         private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro" };
-        
+
         private const int kMaxKeys = 50;
         private const string DefCreateProf = "(Create New Profile)";
         private const string DefGlobalProf = "(Global)";
-        private string ProfileSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\DX1Profiles\\";
-        private string macroDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\DX1Profiles\\Macros\\";
-        private Byte[] mKeyMap = new Byte[3 * kMaxKeys];
+        //private Byte[] mKeyMap = new Byte[3 * kMaxKeys];
         private List<KeyMap> KeyMaps = new List<KeyMap>();
         private String[] mMacroMap = new String [kMaxKeys];
         private Dictionary<String, MacroPlayer.MacroDefinition> mMacros = new Dictionary<String, MacroPlayer.MacroDefinition>();
@@ -159,6 +137,9 @@ namespace DX1Utility
         private String mFileName = "";
         private Profiles CurrentProfile = new Profiles();
         private List<Profiles> ProfileList;
+        private bool RealClose = false;
+        private bool HideMinimized = false;
+
         
         // QuickKey programming state manager.
         private KeyProgrammer mKeyProgrammer;
@@ -176,18 +157,18 @@ namespace DX1Utility
         
         private System.Windows.Forms.NotifyIcon notifyIcon1;
 
+        //Removed for version 1.2 where we want the close button re-enabled
+        //private const int CP_NOCLOSE_BUTTON = 0x200;
 
-        private const int CP_NOCLOSE_BUTTON = 0x200;
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams myCp = base.CreateParams;
-                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return myCp;
-            }
-        }
+        //protected override CreateParams CreateParams
+        //{
+        //    get
+        //    {
+        //        CreateParams myCp = base.CreateParams;
+        //        myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+        //        return myCp;
+        //    }
+        //}
 
         [DllImport("user32.dll")]
         static public extern IntPtr GetForegroundWindow();
@@ -197,13 +178,13 @@ namespace DX1Utility
         public Form1()
         {
 
-            mKeyProgrammer = new KeyProgrammer(ref mKeyMap, ref mMacroMap);
+            mKeyProgrammer = new KeyProgrammer(ref KeyMaps, ref mMacroMap);
 
             notifyIcon1 = new System.Windows.Forms.NotifyIcon();
             notifyIcon1.Icon = this.Icon;
             notifyIcon1.Text = "DX1 Utility";
             notifyIcon1.MouseDoubleClick += new MouseEventHandler(notifyIcon1_MouseDoubleClick);
-            notifyIcon1.Visible = false;
+            notifyIcon1.Visible = true;
             
             InitializeComponent();
 
@@ -230,11 +211,11 @@ namespace DX1Utility
             MenuItem ProfileSub;
 
             //Check for DX1Profiles folder if it doesn't exist, create it
-            if (!System.IO.Directory.Exists(ProfileSavePath))
-                System.IO.Directory.CreateDirectory(ProfileSavePath);
+            if (!System.IO.Directory.Exists(Globals.ProfileSavePath))
+                System.IO.Directory.CreateDirectory(Globals.ProfileSavePath);
 
             //Load Profile List
-            ProfileList = (List<Profiles>)LoadProfiles(ProfileSavePath + "Dx1Profiles.dat");
+            ProfileList = (List<Profiles>)LoadProfiles(Globals.ProfileSavePath + "Dx1Profiles.dat");
 
             //Add list of profiles to V_Profiles Combo Box and Context Menu
             foreach (Profiles Profile in ProfileList)
@@ -281,14 +262,17 @@ namespace DX1Utility
 
             //Add Description Column
             DataGridViewTextBoxColumn DescColumn = new DataGridViewTextBoxColumn();
-            DescColumn.Width = 70;
+            DescColumn.Width = 120;
             DescColumn.DataPropertyName = "Description";
             DescColumn.HeaderText = "Description";
             G_KeyMap.Columns.Add(DescColumn);
 
 
+            //Finialize Quick-Menu Options for the Notify Icon
             ProfileMenu.Popup += new EventHandler(QuickMenuPopup);
             ContextMenu1.MenuItems.Add(ProfileMenu);
+            ContextMenu1.MenuItems.Add("-");
+            ContextMenu1.MenuItems.Add("O&pen", new EventHandler(notifyIcon1_MouseDoubleClick));
             ContextMenu1.MenuItems.Add("E&xit", new EventHandler(CloseApp));
 
             notifyIcon1.ContextMenu = ContextMenu1;
@@ -297,8 +281,6 @@ namespace DX1Utility
             appFocusCheckTimer.Interval = 1000;
             appFocusCheckTimer.Elapsed += new System.Timers.ElapsedEventHandler(appFocusCheckTimer_Elapsed);
             appFocusCheckTimer.Start();
-
-
 
         }
 
@@ -309,10 +291,10 @@ namespace DX1Utility
             MacroList.Items.Add("NEW MACRO");
 
             // Add the files from the directory
-            if (!System.IO.Directory.Exists(macroDir))
-                System.IO.Directory.CreateDirectory(macroDir);
+            if (!System.IO.Directory.Exists(Globals.macroDir))
+                System.IO.Directory.CreateDirectory(Globals.macroDir);
 
-            String[] files = System.IO.Directory.GetFiles(macroDir, "*.mac");
+            String[] files = System.IO.Directory.GetFiles(Globals.macroDir, "*.mac");
             foreach(String name in files)
             {
                 System.IO.FileStream stream = new System.IO.FileStream(name, System.IO.FileMode.Open);
@@ -511,20 +493,30 @@ namespace DX1Utility
             if (mDevHandle != IntPtr.Zero)
                 mDX1Hardware.TestMode(mDevHandle);
 
-            RebuildMacroList();
+            //RebuildMacroList();
             //ReBuildKeyMap();
             V_Profiles.Text = CurrentProfile.ProfName;
         }
         
         void MapMacroKeys()
         {
-            for (int i = 0; i< kMaxKeys; i++)
+            //Original Code for Macros in case new code is broken
+            //for (int i = 0; i< kMaxKeys; i++)
+            //{
+            //    if (mKeyMap[i * 3 + 1] == 0x3 && mMacros.ContainsKey(mMacroMap[i]))
+            //    {
+            //        MacroPlayer.MacroDefinition macro = mMacros[mMacroMap[i]];
+            //        mKeyMacroSequenceMapping[i] = macro;
+            //    }
+            //}
+            foreach (KeyMap DxKey in KeyMaps)
             {
-                if (mKeyMap[i * 3 + 1] == 0x3 && mMacros.ContainsKey(mMacroMap[i]))
+                if(DxKey.Type == 0x3 && mMacros.ContainsKey(mMacroMap[DxKey.Dx1Key]))
                 {
-                    MacroPlayer.MacroDefinition macro = mMacros[mMacroMap[i]];
-                    mKeyMacroSequenceMapping[i] = macro;
+                    MacroPlayer.MacroDefinition macro = mMacros[mMacroMap[DxKey.Dx1Key]];
+                    mKeyMacroSequenceMapping[DxKey.Dx1Key] = macro;
                 }
+
             }
         }
 
@@ -534,7 +526,7 @@ namespace DX1Utility
             mKeyProgrammer.Active = false;
             if (mDevHandle != IntPtr.Zero)
             {
-                mDX1Hardware.SendProgramPacket(mDevHandle, mKeyMap);
+                mDX1Hardware.SendProgramPacket(mDevHandle, mKeyProgrammer.GetKeyMap(KeyMaps));
             }
         }
 
@@ -545,14 +537,13 @@ namespace DX1Utility
 
         protected override void OnResize(System.EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized)
+            if (WindowState == FormWindowState.Minimized & HideMinimized)
             {
-                notifyIcon1.Visible = true;
                 Hide();
             }
             else if (WindowState == FormWindowState.Normal)
             {
-                notifyIcon1.Visible = false;
+                HideMinimized = false;
             }
 
         }
@@ -576,9 +567,17 @@ namespace DX1Utility
                         keyCode++;          // RHS version
                 }
 
-                //Need to recreate this functionality from the ground up for the new Grid
-                //if (mKeyProgrammer.KeyDown(keyCode))
-                //    RebuildButtonList();
+                if (!KeyMaps[mKeyProgrammer.KeyToProgram - 1].AssignSingleKey(keyCode))
+                {
+                    //Error converting key
+                    KeyMaps[mKeyProgrammer.KeyToProgram - 1].Description = "Error converting Key";
+                }
+                else
+                {
+                    KeyMaps[mKeyProgrammer.KeyToProgram - 1].Description = e.KeyCode.ToString();
+                }
+
+                ReBuildKeyMap();
                 
             }
             else
@@ -587,7 +586,7 @@ namespace DX1Utility
                 {
                     if (MacroList.Focused && MacroList.SelectedIndex !=0)
                     {
-                        System.IO.File.Delete(macroDir + MacroList.SelectedItem.ToString() + ".mac");
+                        System.IO.File.Delete(Globals.macroDir + MacroList.SelectedItem.ToString() + ".mac");
                         RebuildMacroList();
                     }
                 }
@@ -597,6 +596,7 @@ namespace DX1Utility
             base.OnKeyDown(e);
         }
 
+        //Used to capture Tab, return, ESC and arrow keys
         protected override bool ProcessDialogKey(Keys keyData)
         {
             if (mKeyProgrammer.Active)
@@ -659,24 +659,37 @@ namespace DX1Utility
 
             //Clear current Menu
             QuickMenu.MenuItems.Clear();
+            List<string> SortedList = new List<string>();
 
-            //Add each profile with "QuickMenu" checked, and "Check" the currently selected profile
+            //Find all Profiles to be in the Quick Menu and store for sorting
             foreach (Profiles Profile in ProfileList)
             {
-                ProfileSub = new MenuItem();
+
                 if (Profile.QuickMenu)
                 {
-                    ProfileSub.Text = Profile.ProfName;
-                    ProfileSub.RadioCheck = true;
-                    if (CurrentProfile.ProfName == Profile.ProfName) ProfileSub.Checked = true;
-                    ProfileSub.Click += new EventHandler(ProfileSelected);
-                    QuickMenu.MenuItems.Add(ProfileSub);
+                    SortedList.Add(Profile.ProfName);
                 }
             }
+
+            //Add the sorted lsit and check the current profile
+            SortedList.Sort();
+            foreach (string ProfileName in SortedList)
+            {
+                ProfileSub = new MenuItem();
+                ProfileSub.Text = ProfileName;
+                ProfileSub.RadioCheck = true;
+                if (CurrentProfile.ProfName == ProfileName) ProfileSub.Checked = true;
+                ProfileSub.Click += new EventHandler(ProfileSelected);
+                QuickMenu.MenuItems.Add(ProfileSub);
+
+            }
+
         }
 
         private void CloseApp(object sender, EventArgs e)
         {
+            
+            RealClose = true;
             Application.Exit();
         }
 
@@ -699,7 +712,7 @@ namespace DX1Utility
         private void LogDebug(string message, bool TimeFlag = false)
         {
             //Logs incoming message to Debug Log File with Time Stamp if specified
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(ProfileSavePath + "Dx1Debug.txt", true);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(Globals.ProfileSavePath + "Dx1Debug.txt", true);
             if (TimeFlag)
             {
                 sw.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), message);
@@ -715,7 +728,7 @@ namespace DX1Utility
         private void SaveButtonstoProfile(string ProfileName)
         {
             //Save the Keymap to .pgm in the Profile folder
-            System.IO.FileStream fs = new System.IO.FileStream(ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
+            System.IO.FileStream fs = new System.IO.FileStream(Globals.ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
             UsedToSaveProgramSetv2 temp = new UsedToSaveProgramSetv2(KeyMaps , mMacroMap);
             UsedToSaveProgramSetv2.Write(fs, temp);
             fs.Close();
@@ -724,9 +737,9 @@ namespace DX1Utility
         private void LoadButtonsfromProfile(string ProfileName)
         {
             //Load the Keymap from the .pgm file for this profile
-            if (System.IO.File.Exists(ProfileSavePath + ProfileName + ".pgm"))
+            if (System.IO.File.Exists(Globals.ProfileSavePath + ProfileName + ".pgm"))
             {
-                System.IO.FileStream fs = new System.IO.FileStream(ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read);
+                System.IO.FileStream fs = new System.IO.FileStream(Globals.ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read);
                 LoadFromStream(fs);
                 mFileName = fs.Name;
                 fs.Close();
@@ -758,7 +771,7 @@ namespace DX1Utility
             IFormatter formatter = new BinaryFormatter();
             formatter.Serialize(ms, ProfileList);
             byte[] ba = ms.ToArray();
-            System.IO.FileStream fs = new System.IO.FileStream(ProfileSavePath + "Dx1Profiles.dat", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
+            System.IO.FileStream fs = new System.IO.FileStream(Globals.ProfileSavePath + "Dx1Profiles.dat", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
             fs.Write(ba.ToArray(), 0, ba.Length);
             fs.Close();
             ms.Close();
@@ -804,17 +817,6 @@ namespace DX1Utility
 
         private void ReBuildKeyMap()
         {
-            //Take the current KeyMaps and create the KeyMap used to program the keyboard
-            //Step through the List KeyMaps generating the ByteArray KeyMap
-            for (int i = 0; i < kMaxKeys; i++ )
-            {
-                int offset = (i) * 3;
-                mKeyMap[offset++] = KeyMaps[i].Dx1Key ;
-                mKeyMap[offset++] = KeyMaps[i].Type;
-                mKeyMap[offset++] = KeyMaps[i].Action;
-
-            }
-
             //Refresh the DataGridView
             if (!this.G_KeyMap.InvokeRequired)
             {
@@ -828,8 +830,14 @@ namespace DX1Utility
         // Various Click things
         private void button1_Click(object sender, EventArgs e)
         {          
+            //Turn on Quick Programming
             mKeyProgrammer.Active = !mKeyProgrammer.Active;
-            if (!mKeyProgrammer.Active) { SaveButtonstoProfile(CurrentProfile.ProfName); }
+            B_QuickPrg.Text = "Programming";
+            if (!mKeyProgrammer.Active) 
+            {
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+                B_QuickPrg.Text = "Quick Program";
+            }
         }
         
         private void LoadFromStream(System.IO.Stream inStream)
@@ -839,7 +847,7 @@ namespace DX1Utility
             KeyMaps = temp.keyMaps;
             mMacroMap = temp.macroMap;
             ReBuildKeyMap();
-            mKeyProgrammer = new KeyProgrammer(ref mKeyMap, ref mMacroMap);
+            mKeyProgrammer = new KeyProgrammer(ref KeyMaps, ref mMacroMap);
         }
 
         String GetUniqueMacroName()
@@ -894,7 +902,7 @@ namespace DX1Utility
                 macroEdited = edit.GetMacroDefinition();
                 if (macroEdited.name.Length > 0)
                 {
-                    System.IO.FileStream stream = new System.IO.FileStream(macroDir+macroEdited.name+".mac", System.IO.FileMode.OpenOrCreate,  System.IO.FileAccess.Write );
+                    System.IO.FileStream stream = new System.IO.FileStream(Globals.macroDir + macroEdited.name + ".mac", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
                     MacroPlayer.MacroDefinition.Write(stream, macroEdited);
                     stream.Close();
                 }
@@ -923,15 +931,14 @@ namespace DX1Utility
             Activate();
         }
 
-
-        private void B_EditProfile_Click(object sender, EventArgs e)
+        private void EditProfile(string ProfiletoEdit)
         {
             DialogResult PPropAnswer;
             bool bNewProfile = false;
             ProfileSearcher Searcher = new ProfileSearcher();
 
             //Cannot Edit (Global) Profile
-            if (V_Profiles.Text == DefGlobalProf)
+            if (ProfiletoEdit == DefGlobalProf)
             {
                 MessageBox.Show("Cannot Edit the Global Profile's properties", "", MessageBoxButtons.OK);
                 return;
@@ -939,7 +946,7 @@ namespace DX1Utility
 
             //Determine if creating a new Profile or editing an existing profile
             ProfileProperties PProp = new ProfileProperties();
-            if (V_Profiles.Text == DefCreateProf)
+            if (ProfiletoEdit == DefCreateProf)
             {
                 bNewProfile = true;
                 CurrentProfile.ProfName = "New";
@@ -989,7 +996,12 @@ namespace DX1Utility
 
             //Save Profile List
             SaveProfiles();
-            
+        }
+
+
+        private void B_EditProfile_Click(object sender, EventArgs e)
+        {
+            EditProfile(V_Profiles.Text);
         }
 
 
@@ -1007,6 +1019,7 @@ namespace DX1Utility
             {
                 //Set Current Profile to Blank
                 CurrentProfile = new Profiles();
+                EditProfile(V_Profiles.SelectedItem.ToString());
             }
             ProfileManuallySelected = true;
 
@@ -1041,9 +1054,9 @@ namespace DX1Utility
             if (ProfConfirm == DialogResult.Yes)
             {
                 //Delete the file if it exists
-                if (System.IO.File.Exists(ProfileSavePath + V_Profiles.Text + ".pgm"))
+                if (System.IO.File.Exists(Globals.ProfileSavePath + V_Profiles.Text + ".pgm"))
                 {
-                    System.IO.File.Delete(ProfileSavePath + V_Profiles.Text + ".pgm");
+                    System.IO.File.Delete(Globals.ProfileSavePath + V_Profiles.Text + ".pgm");
                 }
 
                 ProfileList.RemoveAll((x) => x.ProfName == V_Profiles.Text);
@@ -1056,36 +1069,6 @@ namespace DX1Utility
 
         }
 
-        private void programToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Run Key Programming Wizard
-            DialogResult KeyWizardAnswer;
-            byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index+1);
-
-            //Right-Click Menu of DataGrid, Program
-            ProgramWizard KeyWizard = new ProgramWizard();
-            KeyWizard.InitProgramWizard((byte)CurrentKey);
-            KeyWizardAnswer = KeyWizard.ShowDialog();
-
-            if (KeyWizardAnswer == DialogResult.OK)
-            {
-                //Wizard completed with "Finish", reprogram this key
-                KeyMaps[CurrentKey-1] = KeyWizard.WizardResult();
-                
-                //DX1 Single Key Program
-                int offset = (CurrentKey - 1) * 3;
-                mKeyMap[offset++] = CurrentKey;
-                mKeyMap[offset++] = KeyMaps[CurrentKey].Type;
-                mKeyMap[offset++] = KeyMaps[CurrentKey].Action;
-                
-                SaveButtonstoProfile(CurrentProfile.ProfName);
-                ReBuildKeyMap();
-
-            }
-
-
-        }
-
         private void G_KeyMap_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             //Force selection of the row that was clicked on no matter which mouse button
@@ -1093,27 +1076,6 @@ namespace DX1Utility
             {
                 G_KeyMap.CurrentCell = G_KeyMap.Rows[e.RowIndex].Cells[e.ColumnIndex];
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            string tempString = "";
-            for (int i = 0; i < kMaxKeys; i++)
-            {
-                tempString = tempString + mKeyMap[i];
-            }
-            
-            MessageBox.Show(tempString);
-
-            //if (System.IO.File.Exists(ProfileSavePath + "(Global).pgm"))
-            //{
-            //    System.IO.File.Delete(ProfileSavePath + "(Global).pgm");
-            //}
-
-            //ProfileList.RemoveAll((x) => x.ProfName == V_Profiles.Text);
-            //V_Profiles.Items.Remove(V_Profiles.Text);
-            //SaveProfiles();
-
         }
 
         private void G_KeyMap_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -1125,6 +1087,76 @@ namespace DX1Utility
                 e.CellStyle.ForeColor = Color.Gray;
             }
             
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //Used to override the Close control box to minimize the form instead
+            if (!RealClose)
+            {
+                e.Cancel = true;
+                HideMinimized = true;
+                this.WindowState = FormWindowState.Minimized;
+            }
+
+        }
+
+        //ToolStrip Menu controls for DataGrid
+        private void programToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Run Key Programming Wizard
+            DialogResult KeyWizardAnswer;
+            byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index + 1);
+
+            //Right-Click Menu of DataGrid, Program
+            ProgramWizard KeyWizard = new ProgramWizard();
+            KeyWizard.InitProgramWizard((byte)CurrentKey);
+            KeyWizardAnswer = KeyWizard.ShowDialog();
+
+            if (KeyWizardAnswer == DialogResult.OK)
+            {
+                //Wizard completed with "Finish", reprogram this key
+                KeyMaps[CurrentKey - 1] = KeyWizard.WizardResult();
+                if (KeyMaps[CurrentKey - 1].Type == 0x3)
+                {
+                    //Macro, Assign Macro back to mKeyMacros
+                    mMacroMap[CurrentKey] = KeyMaps[CurrentKey - 1].Description;
+                }
+                //Not needed with new GetKeyMap code
+                //DX1 Single Key Program
+                //int offset = (CurrentKey - 1) * 3;
+                //mKeyMap[offset++] = CurrentKey;
+                //mKeyMap[offset++] = KeyMaps[CurrentKey].Type;
+                //mKeyMap[offset++] = KeyMaps[CurrentKey].Action;
+
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+                ReBuildKeyMap();
+            }
+
+
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Clearing Dx1Key programming
+
+        }
+
+        private void PropertiesStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Directly displaying the properties of the key
+            DialogResult KeyWizardAnswer;
+            byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index);
+
+            ProgramWizard KeyWizard = new ProgramWizard();
+            KeyWizard.InitKeyProperties(KeyMaps[CurrentKey]);
+            KeyWizardAnswer = KeyWizard.ShowDialog();
+
+            if (KeyWizardAnswer == DialogResult.OK)
+            {
+
+            }
+
         }
 
     }

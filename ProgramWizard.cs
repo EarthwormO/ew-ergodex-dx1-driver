@@ -23,6 +23,7 @@ namespace DX1Utility
         private int[] CurrentTabOrder;
         private int CurrentIndex;
         private KeyMap CurrentKeyMap = new KeyMap();
+        private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro" };
 
         public ProgramWizard()
         {
@@ -40,13 +41,19 @@ namespace DX1Utility
         {
             //Assign the CurrentKeyMap to the entire KeyMap passed in
             CurrentKeyMap = CurrentKey;
+            KeysConverter KC = new KeysConverter();
             
             //Go straight to the Confimation Page and populate it
             TB_Wizard.SelectedIndex = 6;
-            T_Conf_Type.Text = "Ignore me";
+            T_Conf_Type.Text = sKeyBindings[CurrentKeyMap.Type];
             T_Conf_Desc.Text = CurrentKeyMap.Description;
-            T_Conf_Actual.Text = "Ignore me";
-            //Enable the textboxes
+            T_Conf_Actual.Text = CurrentKeyMap.Action.ToString();
+            T_Conf_Desc.Focus();
+            T_Conf_Type.Enabled = false;
+            T_Conf_Actual.Enabled = false;
+            B_Back.Enabled = false;
+            B_Next.Enabled = false;
+            B_OK.Enabled = true;
 
             BuildMacroList();
         }
@@ -191,7 +198,6 @@ namespace DX1Utility
                         
                         int tempkey = (int)e.KeyCode;
                         T_Key.Text = e.KeyCode.ToString();
-
                         // Seperate left and right shift/ctrl/alt
                         if (tempkey >= 0x10 && tempkey <= 0x12)
                         {
@@ -202,7 +208,8 @@ namespace DX1Utility
                                 tempkey++;          // RHS version
                         }
                         CurrentKeyMap.Description = e.KeyCode.ToString();
-                        
+                        CurrentKeyMap.KeyName = e.KeyCode.ToString();
+
                         T_Description.Text = CurrentKeyMap.Description;
                         T_Conf_Desc.Text = CurrentKeyMap.Description;
                         if (!CurrentKeyMap.AssignSingleKey(tempkey))
@@ -219,8 +226,6 @@ namespace DX1Utility
                         break;
                     }
             }
-
-
         }
 
         private void MacroList_SelectedIndexChanged(object sender, EventArgs e)
@@ -231,9 +236,16 @@ namespace DX1Utility
                 CurrentKeyMap.Action = 0;
                 CurrentKeyMap.Type = 0x3;
                 CurrentKeyMap.Description = MacroList.SelectedItem.ToString();
+                CurrentKeyMap.MacroName = MacroList.SelectedItem.ToString();
                 T_Description.Text = CurrentKeyMap.Description;
                 T_Conf_Desc.Text = CurrentKeyMap.Description;
             }
+
+        }
+
+        private void B_OK_Click(object sender, EventArgs e)
+        {
+            CurrentKeyMap.Description = T_Conf_Desc.Text;
 
         }
 

@@ -151,17 +151,20 @@ namespace DX1Utility
         //    return false;
         //}
 
-        public bool AssignMacro(String macroName)
+        public bool AssignMacro(String macroName, ref List<KeyMap> KeyMaps)
         {
             if (active && keyToProgram != 0)
             {
+                KeyMaps[keyToProgram].Action = 0;
+                KeyMaps[keyToProgram].Type = 0x3;
+                KeyMaps[keyToProgram].Description = macroName;
                 //int offset = (keyToProgram - 1) * 3;
                 //mKeyMap[offset++] = (Byte)keyToProgram;
                 //mKeyMap[offset++] = 3;
                 //mKeyMap[offset++] = 0;
 
-                //mMacroMap[keyToProgram - 1] = macroName;
-                //keyToProgram = 0;
+                mMacroMap[keyToProgram - 1] = macroName;
+                keyToProgram = 0;
                 return true;
             }
             return false;

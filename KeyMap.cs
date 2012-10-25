@@ -8,11 +8,14 @@ namespace DX1Utility
     [Serializable]
     public class KeyMap
     {
-        private byte _Dx1Key;
-        private byte _Type;
-        private byte _Action;
-        private string _Description;
-
+        private byte _Dx1Key;           //DX1 Key being programmed
+        private byte _Type;             //1=Single Key, 2=Modifier Key, 3=Macro, >3 custom
+        private byte _Action;           //What scancode is sent when pressed
+        private string _Description;    //Custom Description typed by user
+        private string _KeyName;        //Single Key of Modifier Key Windows name
+        private string _MacroName;      //Macro Name this Key is programmed to
+        private string _CustomData;     //Unknown, reserved for later, probably "Special Key" commands
+        
         public byte Dx1Key
         {
             get { return _Dx1Key; }
@@ -35,6 +38,24 @@ namespace DX1Utility
         {
             get { return _Description; }
             set { _Description = value; }
+        }
+
+        public string KeyName
+        {
+            get { return _KeyName; }
+            set { _KeyName = value; }
+        }
+
+        public string MacroName
+        {
+            get { return _MacroName; }
+            set { _MacroName = value; }
+        }
+
+        public string CustomData
+        {
+            get { return _CustomData; }
+            set { _CustomData = value; }
         }
 
         public bool AssignSingleKey(int KeyCode)

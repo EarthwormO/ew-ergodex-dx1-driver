@@ -76,14 +76,6 @@ namespace DX1Utility
                     String[] TempMacros = new String[kMaxKeys];
                     UsedToSaveProgramSetv2 programset = new UsedToSaveProgramSetv2(TempKeys, TempMacros);
 
-                    //Testing to ensure app doesnt change the pgm files
-                    //string tempString = "";
-                    //for (int i = 0; i < kMaxKeys; i++)
-                    //{
-                    //    tempString = tempString + prgramsetv1.keyMap[i];
-                    //}
-
-                    
                     for (int i = 0; i < kMaxKeys; i++)
                     {
                         int offset = (i) * 3;
@@ -251,12 +243,18 @@ namespace DX1Utility
             //Initialize the DataGrid and KeyMap List
             G_KeyMap.AutoGenerateColumns = false;
             G_KeyMap.DataSource = KeyMaps;
+            G_KeyMap.AllowUserToResizeRows = false;
+            G_KeyMap.AllowUserToResizeColumns = false;
+            //G_KeyMap.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            //G_KeyMap.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+
 
             //Add Dx1Key Column
             DataGridViewTextBoxColumn DxColumn = new DataGridViewTextBoxColumn();
             DxColumn.Width = 30;
             DxColumn.DataPropertyName = "Dx1Key";
             DxColumn.HeaderText = "Key";
+            DxColumn.ReadOnly = true;
             DxColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             G_KeyMap.Columns.Add(DxColumn);
 
@@ -265,6 +263,7 @@ namespace DX1Utility
             DescColumn.Width = 120;
             DescColumn.DataPropertyName = "Description";
             DescColumn.HeaderText = "Description";
+            DescColumn.ReadOnly = true;
             G_KeyMap.Columns.Add(DescColumn);
 
 
@@ -493,7 +492,7 @@ namespace DX1Utility
             if (mDevHandle != IntPtr.Zero)
                 mDX1Hardware.TestMode(mDevHandle);
 
-            RebuildMacroList();
+            //RebuildMacroList();
             //ReBuildKeyMap();
             V_Profiles.Text = CurrentProfile.ProfName;
         }
@@ -577,6 +576,7 @@ namespace DX1Utility
                     KeyMaps[mKeyProgrammer.KeyToProgram - 1].Description = e.KeyCode.ToString();
                 }
 
+                B_QuickPrg.Text = "Programming";
                 ReBuildKeyMap();
                 
             }
@@ -626,7 +626,11 @@ namespace DX1Utility
                             if (mKeyProgrammer.DX1KeyDown(key))
                             {
                                 MacroList.ClearSelected();
-                                //RebuildButtonList();
+                                if (mKeyProgrammer.Active)
+                                {
+                                    //Currently Quick Programming
+                                    B_QuickPrg.Text = "Key - " + mKeyProgrammer.KeyToProgram;
+                                }
                             }
                             else
                                 DoSomethingWithMacroKeys(vol.dbch_data);
@@ -918,7 +922,8 @@ namespace DX1Utility
                 int index = MacroList.SelectedIndex;
                 if (index != 0 && index != -1)
                 {
-                    mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString());
+                    mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString(), ref KeyMaps);
+                    B_QuickPrg.Text = "Programming";
                 }
 
             }
@@ -936,6 +941,9 @@ namespace DX1Utility
             DialogResult PPropAnswer;
             bool bNewProfile = false;
             ProfileSearcher Searcher = new ProfileSearcher();
+
+            //Disable App Change timer, so CurrentProfile doesn't get edited
+            appFocusCheckTimer.Enabled = false;
 
             //Cannot Edit (Global) Profile
             if (ProfiletoEdit == DefGlobalProf)
@@ -996,6 +1004,10 @@ namespace DX1Utility
 
             //Save Profile List
             SaveProfiles();
+
+            //reenable App Change timer
+            appFocusCheckTimer.Enabled = true;
+
         }
 
 
@@ -1120,7 +1132,7 @@ namespace DX1Utility
                 if (KeyMaps[CurrentKey - 1].Type == 0x3)
                 {
                     //Macro, Assign Macro back to mKeyMacros
-                    mMacroMap[CurrentKey - 1] = KeyMaps[CurrentKey - 1].Description;
+                    mMacroMap[CurrentKey] = KeyMaps[CurrentKey - 1].Description;
                 }
                 //Not needed with new GetKeyMap code
                 //DX1 Single Key Program
@@ -1154,6 +1166,10 @@ namespace DX1Utility
 
             if (KeyWizardAnswer == DialogResult.OK)
             {
+                //For now, only Description can be changed using the Properties, so only get that change
+                KeyMaps[CurrentKey].Description = KeyWizard.WizardResult().Description;
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+                ReBuildKeyMap();
 
             }
 

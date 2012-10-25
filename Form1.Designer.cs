@@ -134,6 +134,7 @@
             this.G_KeyMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.G_KeyMap.ContextMenuStrip = this.CM_KeyMap;
             this.G_KeyMap.Location = new System.Drawing.Point(20, 37);
+            this.G_KeyMap.MultiSelect = false;
             this.G_KeyMap.Name = "G_KeyMap";
             this.G_KeyMap.RowHeadersVisible = false;
             this.G_KeyMap.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -149,26 +150,26 @@
             this.clearToolStripMenuItem,
             this.PropertiesStripMenuItem});
             this.CM_KeyMap.Name = "CM_KeyMap";
-            this.CM_KeyMap.Size = new System.Drawing.Size(124, 70);
+            this.CM_KeyMap.Size = new System.Drawing.Size(128, 70);
             // 
             // programToolStripMenuItem
             // 
             this.programToolStripMenuItem.Name = "programToolStripMenuItem";
-            this.programToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.programToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.programToolStripMenuItem.Text = "Program";
             this.programToolStripMenuItem.Click += new System.EventHandler(this.programToolStripMenuItem_Click);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // PropertiesStripMenuItem
             // 
             this.PropertiesStripMenuItem.Name = "PropertiesStripMenuItem";
-            this.PropertiesStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.PropertiesStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.PropertiesStripMenuItem.Text = "Properties";
             this.PropertiesStripMenuItem.Click += new System.EventHandler(this.PropertiesStripMenuItem_Click);
             // 
@@ -192,7 +193,7 @@
             this.MaximumSize = new System.Drawing.Size(745, 526);
             this.MinimumSize = new System.Drawing.Size(645, 526);
             this.Name = "Form1";
-            this.Text = "c:\\temp";
+            this.Text = "Dx1Utility";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.G_KeyMap)).EndInit();
             this.CM_KeyMap.ResumeLayout(false);

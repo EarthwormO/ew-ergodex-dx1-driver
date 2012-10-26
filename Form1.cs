@@ -724,6 +724,8 @@ namespace DX1Utility
             CurrentProfile = Searcher.ProfileSearchByName(ProfileList, SelectedItem);
             LoadButtonsfromProfile(CurrentProfile.ProfName);
             ProfileManuallySelected = true;
+            ApplyKeySet();
+
         }
 
         private void LogDebug(string message, bool TimeFlag = false)
@@ -1159,6 +1161,14 @@ namespace DX1Utility
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Clearing Dx1Key programming
+            byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index);
+
+            KeyMaps[CurrentKey].Action = 0;
+            KeyMaps[CurrentKey].Type = 0;
+            KeyMaps[CurrentKey].Description = "";
+            KeyMaps[CurrentKey].MacroName = "";
+            KeyMaps[CurrentKey].KeyName = "";
+            KeyMaps[CurrentKey].CustomData = "";
 
         }
 

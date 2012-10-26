@@ -23,7 +23,7 @@ namespace DX1Utility
 
             public Byte[] keyMap;
             public String[] macroMap;
-            public KeyMap[] keyMaps;
+            //public KeyMap[] keyMaps;
             public UsedToSaveProgramSet(Byte[] keys, String[] macros)
             {
                 keyMap = keys;
@@ -57,10 +57,9 @@ namespace DX1Utility
 
             public String[] macroMap;
             public List<KeyMap> keyMaps;
-            public UsedToSaveProgramSetv2(List<KeyMap> keys, String[] macros)
+            public UsedToSaveProgramSetv2(List<KeyMap> keys)
             {
                 keyMaps = keys;
-                macroMap = macros;
             }
 
             public static UsedToSaveProgramSetv2 Read(System.IO.Stream stream)
@@ -74,18 +73,11 @@ namespace DX1Utility
                     UsedToSaveProgramSet prgramsetv1 = (UsedToSaveProgramSet)formatter.Deserialize(stream);
                     List<KeyMap> TempKeys = new List<KeyMap>();
                     String[] TempMacros = new String[kMaxKeys];
-                    UsedToSaveProgramSetv2 programset = new UsedToSaveProgramSetv2(TempKeys, TempMacros);
+                    UsedToSaveProgramSetv2 programset = new UsedToSaveProgramSetv2(TempKeys);
 
-                    //Testing to ensure app doesnt change the pgm files
-                    //string tempString = "";
-                    //for (int i = 0; i < kMaxKeys; i++)
-                    //{
-                    //    tempString = tempString + prgramsetv1.keyMap[i];
-                    //}
-
-                    
                     for (int i = 0; i < kMaxKeys; i++)
                     {
+                        //process each of the keys
                         int offset = (i) * 3;
                         
                         KeyMap NewKey = new KeyMap();
@@ -102,9 +94,21 @@ namespace DX1Utility
                             NewKey.Description = "Keycode-" + NewKey.Action.ToString();
                         }
                         programset.keyMaps.Add(NewKey);
+
                     }
 
-                    programset.macroMap = prgramsetv1.macroMap;
+                    TempMacros = prgramsetv1.macroMap;
+
+                    for (int i = 0; i < kMaxKeys; i++)
+                    {
+                        //Process each of the Macros into the corresponding key
+                        if (TempMacros[i] != null)
+                        {
+                            programset.keyMaps[i].MacroName = TempMacros[i];
+                        }
+                    }
+
+
 
                     return programset;
                     
@@ -131,7 +135,7 @@ namespace DX1Utility
         private const string DefGlobalProf = "(Global)";
         //private Byte[] mKeyMap = new Byte[3 * kMaxKeys];
         private List<KeyMap> KeyMaps = new List<KeyMap>();
-        private String[] mMacroMap = new String [kMaxKeys];
+        //private String[] mMacroMap = new String [kMaxKeys];
         private Dictionary<String, MacroPlayer.MacroDefinition> mMacros = new Dictionary<String, MacroPlayer.MacroDefinition>();
         private MacroPlayer.MacroDefinition[] mKeyMacroSequenceMapping = new MacroPlayer.MacroDefinition[kMaxKeys];
         private String mFileName = "";
@@ -178,7 +182,7 @@ namespace DX1Utility
         public Form1()
         {
 
-            mKeyProgrammer = new KeyProgrammer(ref KeyMaps, ref mMacroMap);
+            mKeyProgrammer = new KeyProgrammer(ref KeyMaps);
 
             notifyIcon1 = new System.Windows.Forms.NotifyIcon();
             notifyIcon1.Icon = this.Icon;
@@ -251,12 +255,18 @@ namespace DX1Utility
             //Initialize the DataGrid and KeyMap List
             G_KeyMap.AutoGenerateColumns = false;
             G_KeyMap.DataSource = KeyMaps;
+            G_KeyMap.AllowUserToResizeRows = false;
+            G_KeyMap.AllowUserToResizeColumns = false;
+            //G_KeyMap.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            //G_KeyMap.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+
 
             //Add Dx1Key Column
             DataGridViewTextBoxColumn DxColumn = new DataGridViewTextBoxColumn();
             DxColumn.Width = 30;
             DxColumn.DataPropertyName = "Dx1Key";
             DxColumn.HeaderText = "Key";
+            DxColumn.ReadOnly = true;
             DxColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             G_KeyMap.Columns.Add(DxColumn);
 
@@ -265,6 +275,7 @@ namespace DX1Utility
             DescColumn.Width = 120;
             DescColumn.DataPropertyName = "Description";
             DescColumn.HeaderText = "Description";
+            DescColumn.ReadOnly = true;
             G_KeyMap.Columns.Add(DescColumn);
 
 
@@ -496,25 +507,26 @@ namespace DX1Utility
             //RebuildMacroList();
             //ReBuildKeyMap();
             V_Profiles.Text = CurrentProfile.ProfName;
+            B_QuickPrg.Text = "Quick Program";
         }
         
         void MapMacroKeys()
         {
-            //Original Code for Macros in case new code is broken
-            //for (int i = 0; i< kMaxKeys; i++)
-            //{
-            //    if (mKeyMap[i * 3 + 1] == 0x3 && mMacros.ContainsKey(mMacroMap[i]))
-            //    {
-            //        MacroPlayer.MacroDefinition macro = mMacros[mMacroMap[i]];
-            //        mKeyMacroSequenceMapping[i] = macro;
-            //    }
-            //}
+
             foreach (KeyMap DxKey in KeyMaps)
             {
-                if(DxKey.Type == 0x3 && mMacros.ContainsKey(mMacroMap[DxKey.Dx1Key]))
+                if(DxKey.Type >= 0x3)
                 {
-                    MacroPlayer.MacroDefinition macro = mMacros[mMacroMap[DxKey.Dx1Key]];
-                    mKeyMacroSequenceMapping[DxKey.Dx1Key] = macro;
+                    if (mMacros.ContainsKey(DxKey.MacroName))
+                    {
+                        MacroPlayer.MacroDefinition macro = mMacros[DxKey.MacroName];
+                        mKeyMacroSequenceMapping[DxKey.Dx1Key - 1] = macro;
+                    }
+                    else
+                    {
+                        //Macro not found
+                        LogDebug("Error Macro listed wasn't found: " + DxKey.MacroName, true);
+                    }
                 }
 
             }
@@ -577,6 +589,7 @@ namespace DX1Utility
                     KeyMaps[mKeyProgrammer.KeyToProgram - 1].Description = e.KeyCode.ToString();
                 }
 
+                B_QuickPrg.Text = "Programming";
                 ReBuildKeyMap();
                 
             }
@@ -626,7 +639,11 @@ namespace DX1Utility
                             if (mKeyProgrammer.DX1KeyDown(key))
                             {
                                 MacroList.ClearSelected();
-                                //RebuildButtonList();
+                                if (mKeyProgrammer.Active)
+                                {
+                                    //Currently Quick Programming
+                                    B_QuickPrg.Text = "Key - " + mKeyProgrammer.KeyToProgram;
+                                }
                             }
                             else
                                 DoSomethingWithMacroKeys(vol.dbch_data);
@@ -729,7 +746,7 @@ namespace DX1Utility
         {
             //Save the Keymap to .pgm in the Profile folder
             System.IO.FileStream fs = new System.IO.FileStream(Globals.ProfileSavePath + ProfileName + ".pgm", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
-            UsedToSaveProgramSetv2 temp = new UsedToSaveProgramSetv2(KeyMaps , mMacroMap);
+            UsedToSaveProgramSetv2 temp = new UsedToSaveProgramSetv2(KeyMaps);
             UsedToSaveProgramSetv2.Write(fs, temp);
             fs.Close();
         }
@@ -845,9 +862,8 @@ namespace DX1Utility
             UsedToSaveProgramSetv2 temp = UsedToSaveProgramSetv2.Read(inStream);
             
             KeyMaps = temp.keyMaps;
-            mMacroMap = temp.macroMap;
             ReBuildKeyMap();
-            mKeyProgrammer = new KeyProgrammer(ref KeyMaps, ref mMacroMap);
+            mKeyProgrammer = new KeyProgrammer(ref KeyMaps);
         }
 
         String GetUniqueMacroName()
@@ -918,7 +934,8 @@ namespace DX1Utility
                 int index = MacroList.SelectedIndex;
                 if (index != 0 && index != -1)
                 {
-                    mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString());
+                    mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString(), ref KeyMaps);
+                    B_QuickPrg.Text = "Programming";
                 }
 
             }
@@ -936,6 +953,9 @@ namespace DX1Utility
             DialogResult PPropAnswer;
             bool bNewProfile = false;
             ProfileSearcher Searcher = new ProfileSearcher();
+
+            //Disable App Change timer, so CurrentProfile doesn't get edited
+            appFocusCheckTimer.Enabled = false;
 
             //Cannot Edit (Global) Profile
             if (ProfiletoEdit == DefGlobalProf)
@@ -996,6 +1016,10 @@ namespace DX1Utility
 
             //Save Profile List
             SaveProfiles();
+
+            //reenable App Change timer
+            appFocusCheckTimer.Enabled = true;
+
         }
 
 
@@ -1117,11 +1141,7 @@ namespace DX1Utility
             {
                 //Wizard completed with "Finish", reprogram this key
                 KeyMaps[CurrentKey - 1] = KeyWizard.WizardResult();
-                if (KeyMaps[CurrentKey - 1].Type == 0x3)
-                {
-                    //Macro, Assign Macro back to mKeyMacros
-                    mMacroMap[CurrentKey] = KeyMaps[CurrentKey - 1].Description;
-                }
+                
                 //Not needed with new GetKeyMap code
                 //DX1 Single Key Program
                 //int offset = (CurrentKey - 1) * 3;
@@ -1154,6 +1174,10 @@ namespace DX1Utility
 
             if (KeyWizardAnswer == DialogResult.OK)
             {
+                //For now, only Description can be changed using the Properties, so only get that change
+                KeyMaps[CurrentKey].Description = KeyWizard.WizardResult().Description;
+                SaveButtonstoProfile(CurrentProfile.ProfName);
+                ReBuildKeyMap();
 
             }
 

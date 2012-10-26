@@ -107,6 +107,7 @@
             this.B_OK.TabIndex = 3;
             this.B_OK.Text = "Finish";
             this.B_OK.UseVisualStyleBackColor = true;
+            this.B_OK.Click += new System.EventHandler(this.B_OK_Click);
             // 
             // B_Cancel
             // 
@@ -441,12 +442,12 @@
             // 
             // T_Conf_Desc
             // 
-            this.T_Conf_Desc.BackColor = System.Drawing.SystemColors.Control;
+            this.T_Conf_Desc.BackColor = System.Drawing.SystemColors.Window;
             this.T_Conf_Desc.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.T_Conf_Desc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.T_Conf_Desc.Location = new System.Drawing.Point(76, 85);
             this.T_Conf_Desc.Name = "T_Conf_Desc";
-            this.T_Conf_Desc.Size = new System.Drawing.Size(123, 20);
+            this.T_Conf_Desc.Size = new System.Drawing.Size(171, 20);
             this.T_Conf_Desc.TabIndex = 13;
             // 
             // label13

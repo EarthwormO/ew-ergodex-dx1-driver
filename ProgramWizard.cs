@@ -249,5 +249,24 @@ namespace DX1Utility
 
         }
 
+        private void G_Special_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //Force selection of the row that was clicked on no matter which mouse button
+            if (e.RowIndex >= 0)
+            {
+                G_Special.CurrentCell = G_Special.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                //The Selection within the Special Function List has changed
+                    CurrentKeyMap.Action = 0;
+                    CurrentKeyMap.Type = 0x4;
+                    CurrentKeyMap.Description = G_Special.SelectedItem.ToString();
+                    CurrentKeyMap.MacroName = G_Special.SelectedItem.ToString();
+                    T_Description.Text = CurrentKeyMap.Description;
+                    T_Conf_Desc.Text = CurrentKeyMap.Description;
+
+            }
+
+        }
+
+
     }
 }

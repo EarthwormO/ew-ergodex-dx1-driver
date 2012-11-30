@@ -53,6 +53,8 @@
             this.MacroList = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.G_Special = new System.Windows.Forms.DataGridView();
+            this.label16 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage13 = new System.Windows.Forms.TabPage();
             this.label11 = new System.Windows.Forms.Label();
@@ -72,6 +74,7 @@
             this.tabPage10.SuspendLayout();
             this.tabPage11.SuspendLayout();
             this.tabPage12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.G_Special)).BeginInit();
             this.tabPage13.SuspendLayout();
             this.tabPage14.SuspendLayout();
             this.SuspendLayout();
@@ -344,6 +347,8 @@
             // 
             // tabPage12
             // 
+            this.tabPage12.Controls.Add(this.G_Special);
+            this.tabPage12.Controls.Add(this.label16);
             this.tabPage12.Controls.Add(this.label6);
             this.tabPage12.Location = new System.Drawing.Point(4, 22);
             this.tabPage12.Name = "tabPage12";
@@ -352,6 +357,30 @@
             this.tabPage12.Text = "Special";
             this.tabPage12.UseVisualStyleBackColor = true;
             // 
+            // G_Special
+            // 
+            this.G_Special.AllowUserToAddRows = false;
+            this.G_Special.AllowUserToDeleteRows = false;
+            this.G_Special.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.G_Special.Location = new System.Drawing.Point(10, 49);
+            this.G_Special.MultiSelect = false;
+            this.G_Special.Name = "G_Special";
+            this.G_Special.RowHeadersVisible = false;
+            this.G_Special.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.G_Special.Size = new System.Drawing.Size(181, 241);
+            this.G_Special.TabIndex = 16;
+            this.G_Special.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.G_Special_CellMouseDown);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(7, 33);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(184, 13);
+            this.label16.TabIndex = 11;
+            this.label16.Text = "Select a Special function from the list:";
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -359,9 +388,9 @@
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.label6.Location = new System.Drawing.Point(6, 3);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(143, 20);
+            this.label6.Size = new System.Drawing.Size(152, 20);
             this.label6.TabIndex = 9;
-            this.label6.Text = "Special Function";
+            this.label6.Text = "Special Functions";
             // 
             // tabPage13
             // 
@@ -520,6 +549,7 @@
             this.tabPage11.PerformLayout();
             this.tabPage12.ResumeLayout(false);
             this.tabPage12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.G_Special)).EndInit();
             this.tabPage13.ResumeLayout(false);
             this.tabPage13.PerformLayout();
             this.tabPage14.ResumeLayout(false);
@@ -569,5 +599,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ListBox MacroList;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.DataGridView G_Special;
     }
 }

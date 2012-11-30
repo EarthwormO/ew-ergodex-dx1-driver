@@ -81,7 +81,7 @@ namespace DX1Utility
             byte[] tempbyte = new byte[3];
 
             tempbyte[0] = _Dx1Key;
-            tempbyte[1] = _Type;
+            tempbyte[1] = Math.Min(_Type, (byte)3);
             tempbyte[2] = _Action;
 
             return tempbyte;

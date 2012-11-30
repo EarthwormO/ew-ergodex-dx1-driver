@@ -361,39 +361,51 @@ namespace DX1Utility
                 }
                 else                  // Key down
                 {
-                    MacroPlayer.MacroDefinition macroDef = mKeyMacroSequenceMapping[curr - 1];
-                    if (macroDef != null)
+                    //Check to see if this is a Macro Key or a "Special Function"
+                    if (KeyMaps[curr - 1].Type > 3)
                     {
-                        if ((macroDef.macroType & MacroPlayer.MacroDefinition.MacroType.kMacroMultiKey) == 0)
+                        //New Special Function
+                        
+                    }
+                    else
+                    {
+                        //Standard Macro, use original Macro Player by Rob
+
+                        MacroPlayer.MacroDefinition macroDef = mKeyMacroSequenceMapping[curr - 1];
+                        if (macroDef != null)
                         {
-                            macroTimer.Stop();
-                            System.DateTime time = System.DateTime.Now;
-                            TimeSpan totalTime = time - initialTime;
-                            UInt64 curTimeMS = (UInt64)totalTime.TotalMilliseconds;
-                            // Create the new Macro instance
-
-                            MacroPlayer.Macro macro = new MacroPlayer.Macro(macroDef);
-                            UInt64 timeToNextEvent = macro.InitMacroAtTime(curTimeMS);
-
-                            // If the macro isn't instantaneous add it to the list.
-                            if (timeToNextEvent != MacroPlayer.kForever)
-                                mMacroPlayer.Add(macro);
-
-                            // process the rest of the running macros to this point.
-                            UInt64 nextExistingMacroEventTime = mMacroPlayer.Tick(curTimeMS);
-
-                            // And if any are still waiting start a timer
-                            if (nextExistingMacroEventTime != MacroPlayer.kForever)
+                            if ((macroDef.macroType & MacroPlayer.MacroDefinition.MacroType.kMacroMultiKey) == 0)
                             {
-                                macroTimer.AutoReset = false;
-                                macroTimer.Interval = (UInt32)(nextExistingMacroEventTime - curTimeMS);
-                                macroTimer.Start();
+                                macroTimer.Stop();
+                                System.DateTime time = System.DateTime.Now;
+                                TimeSpan totalTime = time - initialTime;
+                                UInt64 curTimeMS = (UInt64)totalTime.TotalMilliseconds;
+                                // Create the new Macro instance
+
+                                MacroPlayer.Macro macro = new MacroPlayer.Macro(macroDef);
+                                UInt64 timeToNextEvent = macro.InitMacroAtTime(curTimeMS);
+
+                                // If the macro isn't instantaneous add it to the list.
+                                if (timeToNextEvent != MacroPlayer.kForever)
+                                    mMacroPlayer.Add(macro);
+
+                                // process the rest of the running macros to this point.
+                                UInt64 nextExistingMacroEventTime = mMacroPlayer.Tick(curTimeMS);
+
+                                // And if any are still waiting start a timer
+                                if (nextExistingMacroEventTime != MacroPlayer.kForever)
+                                {
+                                    macroTimer.AutoReset = false;
+                                    macroTimer.Interval = (UInt32)(nextExistingMacroEventTime - curTimeMS);
+                                    macroTimer.Start();
+                                }
+                            }
+                            else
+                            {
+                                macroDef.AllMacroKeysDown();
                             }
                         }
-                        else
-                        {
-                            macroDef.AllMacroKeysDown();
-                        }
+
                     }
 
 

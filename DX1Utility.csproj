@@ -138,6 +138,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SpecialKey.cs" />
+    <Compile Include="SpecialKeyPlayer.cs" />
     <Compile Include="WizardPages.cs">
       <SubType>Component</SubType>
     </Compile>

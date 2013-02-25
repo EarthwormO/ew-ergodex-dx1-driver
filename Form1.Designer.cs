@@ -137,6 +137,7 @@
             this.G_KeyMap.MultiSelect = false;
             this.G_KeyMap.Name = "G_KeyMap";
             this.G_KeyMap.RowHeadersVisible = false;
+            this.G_KeyMap.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.G_KeyMap.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.G_KeyMap.Size = new System.Drawing.Size(169, 420);
             this.G_KeyMap.TabIndex = 15;
@@ -177,7 +178,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(635, 497);
+            this.ClientSize = new System.Drawing.Size(635, 494);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.G_KeyMap);
             this.Controls.Add(this.MacroList);

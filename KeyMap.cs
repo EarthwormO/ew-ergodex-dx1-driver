@@ -12,7 +12,7 @@ namespace DX1Utility
         private byte _Type;             //1=Single Key, 2=Modifier Key, 3=Macro, >3 custom
         private byte _Action;           //What scancode is sent when pressed
         private string _Description;    //Custom Description typed by user
-        private string _KeyName;        //Single Key of Modifier Key Windows name
+        private string _KeyName;        //Single Key or Modifier Key Windows name
         private string _MacroName;      //Macro Name this Key is programmed to
         private string _CustomData;     //Unknown, reserved for later, probably "Special Key" commands
         

@@ -68,6 +68,8 @@
             this.T_Conf_Type = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.RB_True = new System.Windows.Forms.RadioButton();
+            this.RB_False = new System.Windows.Forms.RadioButton();
             this.TB_Wizard.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -347,6 +349,8 @@
             // 
             // tabPage12
             // 
+            this.tabPage12.Controls.Add(this.RB_False);
+            this.tabPage12.Controls.Add(this.RB_True);
             this.tabPage12.Controls.Add(this.G_Special);
             this.tabPage12.Controls.Add(this.label16);
             this.tabPage12.Controls.Add(this.label6);
@@ -366,6 +370,7 @@
             this.G_Special.MultiSelect = false;
             this.G_Special.Name = "G_Special";
             this.G_Special.RowHeadersVisible = false;
+            this.G_Special.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.G_Special.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.G_Special.Size = new System.Drawing.Size(181, 241);
             this.G_Special.TabIndex = 16;
@@ -518,6 +523,30 @@
             this.label8.TabIndex = 9;
             this.label8.Text = "Confirmation";
             // 
+            // RB_True
+            // 
+            this.RB_True.AutoSize = true;
+            this.RB_True.Checked = true;
+            this.RB_True.Location = new System.Drawing.Point(215, 49);
+            this.RB_True.Name = "RB_True";
+            this.RB_True.Size = new System.Drawing.Size(47, 17);
+            this.RB_True.TabIndex = 17;
+            this.RB_True.TabStop = true;
+            this.RB_True.Text = "True";
+            this.RB_True.UseVisualStyleBackColor = true;
+            this.RB_True.Visible = false;
+            // 
+            // RB_False
+            // 
+            this.RB_False.AutoSize = true;
+            this.RB_False.Location = new System.Drawing.Point(215, 72);
+            this.RB_False.Name = "RB_False";
+            this.RB_False.Size = new System.Drawing.Size(50, 17);
+            this.RB_False.TabIndex = 18;
+            this.RB_False.Text = "False";
+            this.RB_False.UseVisualStyleBackColor = true;
+            this.RB_False.Visible = false;
+            // 
             // ProgramWizard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -601,5 +630,7 @@
         private System.Windows.Forms.ListBox MacroList;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.DataGridView G_Special;
+        private System.Windows.Forms.RadioButton RB_False;
+        private System.Windows.Forms.RadioButton RB_True;
     }
 }

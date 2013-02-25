@@ -143,6 +143,7 @@ namespace DX1Utility
         private List<Profiles> ProfileList;
         private bool RealClose = false;
         private bool HideMinimized = false;
+        private SpecialKeyPlayer SpecialKeyPlayer = new SpecialKeyPlayer();
 
         
         // QuickKey programming state manager.
@@ -183,6 +184,7 @@ namespace DX1Utility
         {
 
             mKeyProgrammer = new KeyProgrammer(ref KeyMaps);
+            SpecialKeyPlayer.InitPlayer();
 
             notifyIcon1 = new System.Windows.Forms.NotifyIcon();
             notifyIcon1.Icon = this.Icon;
@@ -352,11 +354,22 @@ namespace DX1Utility
                 else if (last > curr)       // Key Up
                 {
                     lastKeyIndex++;
-
-                    MacroPlayer.MacroDefinition macroDef = mKeyMacroSequenceMapping[last - 1];
-                    if (macroDef != null && (macroDef.macroType & MacroPlayer.MacroDefinition.MacroType.kMacroMultiKey) != 0)
+                    
+                    //Check to see if this is a Macro Key or a "Special Function"
+                    if (KeyMaps[last - 1].Type > 3)
                     {
-                        macroDef.AllMacroKeysUp();                           
+                        //New Special Key Function
+                        SpecialKeyPlayer.KeyUp(KeyMaps[last - 1]);
+
+                    }
+                    else
+                    {
+                        //Standard Macro, use original Macro Player by Rob
+                        MacroPlayer.MacroDefinition macroDef = mKeyMacroSequenceMapping[last - 1];
+                        if (macroDef != null && (macroDef.macroType & MacroPlayer.MacroDefinition.MacroType.kMacroMultiKey) != 0)
+                        {
+                            macroDef.AllMacroKeysUp();
+                        }
                     }
                 }
                 else                  // Key down
@@ -364,7 +377,8 @@ namespace DX1Utility
                     //Check to see if this is a Macro Key or a "Special Function"
                     if (KeyMaps[curr - 1].Type > 3)
                     {
-                        //New Special Function
+                        //New Special Key Function
+                        SpecialKeyPlayer.KeyDown(KeyMaps[curr - 1]);
                         
                     }
                     else
@@ -527,7 +541,7 @@ namespace DX1Utility
 
             foreach (KeyMap DxKey in KeyMaps)
             {
-                if(DxKey.Type >= 0x3)
+                if(DxKey.Type == 0x3)
                 {
                     if (mMacros.ContainsKey(DxKey.MacroName))
                     {
@@ -1148,7 +1162,7 @@ namespace DX1Utility
 
             //Right-Click Menu of DataGrid, Program
             ProgramWizard KeyWizard = new ProgramWizard();
-            KeyWizard.InitProgramWizard((byte)CurrentKey);
+            KeyWizard.InitProgramWizard(SpecialKeyPlayer, (byte)CurrentKey);
             KeyWizardAnswer = KeyWizard.ShowDialog();
 
             if (KeyWizardAnswer == DialogResult.OK)
@@ -1181,6 +1195,7 @@ namespace DX1Utility
             KeyMaps[CurrentKey].MacroName = "";
             KeyMaps[CurrentKey].KeyName = "";
             KeyMaps[CurrentKey].CustomData = "";
+            G_KeyMap.Invalidate();
 
         }
 

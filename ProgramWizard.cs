@@ -24,17 +24,34 @@ namespace DX1Utility
         private int CurrentIndex;
         private KeyMap CurrentKeyMap = new KeyMap();
         private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro" };
+        private SpecialKeyPlayer _SpecialKeyPlayer;
 
         public ProgramWizard()
         {
             InitializeComponent();
         }
 
-        public void InitProgramWizard(byte Dx1Key)
+        public void InitProgramWizard(SpecialKeyPlayer SpecialKeyPlayer, byte Dx1Key)
         {
             CurrentKeyMap.Dx1Key = Dx1Key;
             T_DXKey.Text = Dx1Key.ToString();
             BuildMacroList();
+            _SpecialKeyPlayer = SpecialKeyPlayer;
+
+            //Assign Special Key Data Grid
+            G_Special.AutoGenerateColumns = false;
+            G_Special.DataSource = _SpecialKeyPlayer.SpecialKeys;
+            G_Special.AllowUserToResizeRows = false;
+            G_Special.AllowUserToResizeColumns = false;
+            
+            //Add Name Column
+            DataGridViewTextBoxColumn DescColumn = new DataGridViewTextBoxColumn();
+            DescColumn.Width = 150;
+            DescColumn.DataPropertyName = "SpecialName";
+            DescColumn.HeaderText = "Name";
+            DescColumn.ReadOnly = true;
+            G_Special.Columns.Add(DescColumn);
+
         }
 
         public void InitKeyProperties(KeyMap CurrentKey)
@@ -133,6 +150,14 @@ namespace DX1Utility
                     {
                         //Leaving Macro Tab
                         CurrentIndex++;
+                        break;
+                    }
+                case 4:
+                    {
+                        //Leaving Special Tab
+                        CurrentIndex++;
+                        ProcessExtraData();
+                        //assign current data to Key
                         break;
                     }
                 case 5:
@@ -255,18 +280,63 @@ namespace DX1Utility
             if (e.RowIndex >= 0)
             {
                 G_Special.CurrentCell = G_Special.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                //The Selection within the Special Function List has changed
-                    CurrentKeyMap.Action = 0;
-                    CurrentKeyMap.Type = 0x4;
-                    CurrentKeyMap.Description = G_Special.SelectedItem.ToString();
-                    CurrentKeyMap.MacroName = G_Special.SelectedItem.ToString();
-                    T_Description.Text = CurrentKeyMap.Description;
-                    T_Conf_Desc.Text = CurrentKeyMap.Description;
+                
+                //Check to determine if any additional information is needed
+                if (_SpecialKeyPlayer.SpecialKeys[G_Special.CurrentRow.Index].ReqData)
+                {
+                    //Get extra data from user based on ExtraDataType
+                    switch (_SpecialKeyPlayer.SpecialKeys[G_Special.CurrentRow.Index].ExtraDataType)
+                    {
+                        case DX1Utility.SpecialKey.SpecialKeysExtraData.Boolean:
+                            {
+                                //Use the True False Radio Buttons
+                                RB_True.Visible = true;
+                                RB_False.Visible = true;
+
+                                //Get the names to be used instead of True False fromt he ExtraDataDictionary
+                                RB_True.Text = _SpecialKeyPlayer.SpecialKeys[G_Special.CurrentRow.Index].ExtraDataParams["True"];
+                                RB_False.Text = _SpecialKeyPlayer.SpecialKeys[G_Special.CurrentRow.Index].ExtraDataParams["False"];
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+                    }
+                    //MessageBox.Show("Extra Data Type =" + );
+                }
+
+                //Assign Default Description of DX1 Key to current Special Key name
+                CurrentKeyMap.Type = 4;
+                CurrentKeyMap.Action = (byte)G_Special.CurrentRow.Index;
+                CurrentKeyMap.Description = G_Special.Rows[G_Special.CurrentRow.Index].Cells[0].Value.ToString();
+                T_Description.Text = CurrentKeyMap.Description;
+                T_Conf_Desc.Text = CurrentKeyMap.Description;
+
+                
 
             }
 
+
         }
 
+        private void ProcessExtraData()
+        {
+            //Custom process to Take the extra data for Special Keys and convert it to CustomData for the CurrentKey
+            switch (_SpecialKeyPlayer.SpecialKeys[G_Special.CurrentRow.Index].ExtraDataType)
+            {
+                case DX1Utility.SpecialKey.SpecialKeysExtraData.Boolean:
+                    {
+                        //For a Boolean Extra data, pass in the value of Checked for True
+                        CurrentKeyMap.CustomData = _SpecialKeyPlayer.GetCustomData(G_Special.CurrentRow.Index, RB_True.Checked.ToString());
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
 
     }
 }

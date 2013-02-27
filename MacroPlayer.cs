@@ -181,12 +181,14 @@ namespace DX1Utility
             public UInt32 time;
             public bool keyUp;
             public byte keyCode;
+            public int keyType = 0;
 
-            public KeySequenceEntry(UInt32 t, bool up, byte key)
+            public KeySequenceEntry(UInt32 t, bool up, byte key, int type)
             {
                 time = t;
                 keyUp = up;
                 keyCode = key;
+                keyType = type;
             }
 
         }
@@ -215,16 +217,29 @@ namespace DX1Utility
                         break;
 
                     INPUT temp = new INPUT();
-                    temp.type = INPUT_KEYBOARD;
-                    if (((macroKeys.macroType & MacroDefinition.MacroType.kMacroUseScanCodes) != 0))
+                    if(entry.keyType != 2)
                     {
-                        temp.ki.wScan = (ushort)entry.keyCode;
-                        temp.ki.dwFlags = KEYEVENTF_SCANCODE |  (entry.keyUp ? KEYEVENTF_KEYUP : 0);
+                        //Standard keyboard playback
+                        temp.type = INPUT_KEYBOARD;
+                        if (((macroKeys.macroType & MacroDefinition.MacroType.kMacroUseScanCodes) != 0))
+                        {
+                            temp.ki.wScan = (ushort)entry.keyCode;
+                            temp.ki.dwFlags = KEYEVENTF_SCANCODE | (entry.keyUp ? KEYEVENTF_KEYUP : 0);
+                        }
+                        else
+                        {
+                            temp.ki.wVk = entry.keyCode;
+                            temp.ki.dwFlags = entry.keyUp ? KEYEVENTF_KEYUP : 0;
+                        }
                     }
                     else
                     {
-                        temp.ki.wVk = entry.keyCode;
-                        temp.ki.dwFlags = entry.keyUp ? KEYEVENTF_KEYUP : 0;
+                        //New Mouse playback
+                        temp.type = INPUT_MOUSE;
+                        temp.mi.dx = 0;
+                        temp.mi.dy = 0;
+                        temp.mi.mouseData = 0;
+                        temp.mi.dwFlags = (uint)entry.keyCode;
                     }
                     keyCommands.Add(temp);
                 }
@@ -255,14 +270,14 @@ namespace DX1Utility
 
 
         [StructLayout(LayoutKind.Sequential)]
-        struct MOUSEINPUT
+        private struct MOUSEINPUT
         {
-            int dx;
-            int dy;
-            uint mouseData;
-            uint dwFlags;
-            uint time;
-            IntPtr dwExtraInfo;
+            public int dx;
+            public int dy;
+            public int mouseData;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -284,12 +299,12 @@ namespace DX1Utility
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        struct INPUT
+        private struct INPUT
         {
             [FieldOffset(0)]
             public int type;
             [FieldOffset(4)] //*
-            MOUSEINPUT mi;
+            public MOUSEINPUT mi;
             [FieldOffset(4)] //*
             public KEYBDINPUT ki;
             [FieldOffset(4)] //*

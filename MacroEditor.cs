@@ -16,10 +16,10 @@ namespace DX1Utility
             InitializeComponent();
 
             MacroCommands.Columns.Add("Time");
-            MacroCommands.Columns.Add("Action");
+            MacroCommands.Columns.Add("Type");
             MacroCommands.Columns.Add("KeyCode");
             ListViewItem item = new ListViewItem(""+0);
-            item.SubItems.Add("KeyDown");
+            item.SubItems.Add("Type");
             item.SubItems.Add(""+0x21);
 
             MacroCommands.Items.Add(item);
@@ -89,7 +89,31 @@ namespace DX1Utility
                 {
                     MacroPlayer.KeySequenceEntry entry = macro.sequence[i];
                     ListViewItem item = new ListViewItem("" + entry.time);
-                    item.SubItems.Add(entry.keyUp ? "KeyUp" : "KeyDown");
+                    if (entry.keyUp)
+                    {
+                        item.SubItems.Add("KeyUp");
+                    }
+                    else
+                    {
+                        switch (entry.keyType)
+                        {
+                            case 1:
+                                {
+                                    item.SubItems.Add("KeyUp");
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    item.SubItems.Add("Mouse");
+                                    break;
+                                }
+                            default:
+                                {
+                                    item.SubItems.Add("KeyDown");
+                                    break;
+                                }
+                        }
+                    }
                     item.SubItems.Add("" + entry.keyCode);
 
                     MacroCommands.Items.Add(item);
@@ -110,8 +134,27 @@ namespace DX1Utility
                  uint time = UInt32.Parse(item.SubItems[0].Text);
                  bool keyUp = item.SubItems[1].Text == "KeyUp";
                  Byte keyCode = Byte.Parse(item.SubItems[2].Text);
+                 int keyType;
+                 switch (item.SubItems[1].Text)
+                 {
+                     case "KeyUp":
+                         {
+                             keyType = 1;
+                             break;
+                         }
+                     case "Mouse":
+                         {
+                             keyType = 2;
+                             break;
+                         }
+                     default:
+                         {
+                             keyType = 0;
+                             break;
+                         }
+                 }
 
-                 keyList.Add(new MacroPlayer.KeySequenceEntry(time, keyUp, keyCode));
+                 keyList.Add(new MacroPlayer.KeySequenceEntry(time, keyUp, keyCode, keyType));
 
              }
              String name = MacroName.Text;

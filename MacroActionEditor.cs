@@ -30,7 +30,7 @@ namespace DX1Utility
         public void Init(ListViewItem item)
         {
             Time.Text = item.SubItems[0].Text;
-            comboBox1.SelectedIndex = item.SubItems[1].Text == "KeyUp" ? 1 : 0;
+            comboBox1.SelectedItem = item.SubItems[1].Text;
             textBox1.Text = item.SubItems[2].Text;
         }
 

@@ -50,7 +50,8 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "KeyDown",
-            "KeyUp"});
+            "KeyUp",
+            "Mouse"});
             this.comboBox1.Location = new System.Drawing.Point(152, 13);
             this.comboBox1.MaxDropDownItems = 2;
             this.comboBox1.Name = "comboBox1";

@@ -102,8 +102,8 @@ namespace DX1Utility
         }
 
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+//        [System.Runtime.InteropServices.DllImport("user32.dll")]
+//        public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
 
 
         public void KeyDown(KeyMap CurrentKey, string ExtraData = "")

@@ -662,6 +662,9 @@ namespace DX1Utility
                             DEV_BROADCAST_DEVICEHANDLE vol;
                             vol = (DEV_BROADCAST_DEVICEHANDLE) Marshal.PtrToStructure(m.LParam, typeof(DEV_BROADCAST_DEVICEHANDLE));
                             int key = (int)vol.dbch_data[0];
+                            //Highlight DX1 Key that was pressed in G_KeyMap to make finding and programming keys easier.
+                            G_KeyMap.CurrentCell = G_KeyMap.Rows[key-1].Cells[0];
+
                             if (mKeyProgrammer.DX1KeyDown(key))
                             {
                                 MacroList.ClearSelected();

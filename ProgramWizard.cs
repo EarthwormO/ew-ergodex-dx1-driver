@@ -246,6 +246,11 @@ namespace DX1Utility
                         e.SuppressKeyPress = true;
                         break;
                     }
+                case 2:
+                        {
+                            //On MultiKey programming, capture all keystrokes and assign up to 4 to the L_MultiKey ListBox
+                            break;
+                        }
                 default:
                     {
                         break;

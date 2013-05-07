@@ -18,6 +18,7 @@ namespace DX1Utility
 
         private int _SpecialID;                             //Holds the ID of the special key for reerence and search
         private string _SpecialName;                        //Holds the Name of the special key for display
+        private ushort _SpecialValue;                       //Holds the Value of the key press if this special key can be used as a Value
         private bool _ReqData = false;                      //Does this Special key require Additional Settings
         private SpecialKeysExtraData _ExtraDataType =  0;   //What type of Extra Data is required 1=Boolean, 2=Textbox, 4=Slider
         private Dictionary<string, string> _ExtraDataParams = new Dictionary<string,string>();                //Holds the parameters for what to display when extra data is required
@@ -32,6 +33,12 @@ namespace DX1Utility
         {
             get { return _SpecialName; }
             set { _SpecialName = value; }
+        }
+
+        public ushort SpecialValue
+        {
+            get { return _SpecialValue; }
+            set { _SpecialValue = value; }
         }
 
         public bool ReqData

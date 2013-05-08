@@ -19,11 +19,15 @@ namespace DX1Utility
         const uint MOUSEEVENTF_XUP = 0x0100;
         const uint MOUSEEVENTF_VWHEEL = 0x0800;
         const uint MOUSEEVENTF_HWHEEL = 0x1000;
+        const ushort MEDIA_NEXT = 0xB0;
+        const ushort MEDIA_PREV = 0xB1;
+        const ushort MEDIA_STOP = 0xB2;
+        const ushort MEDIA_PLAY_PAUSE = 0xB3;
+        const uint KEYEVENTF_KEYUP = 0x0002;
 
         
         private List<SpecialKey> _SpecialKeys = new List<SpecialKey>();
-
-        
+                
         public List<SpecialKey> SpecialKeys
         {
             get { return _SpecialKeys; }
@@ -64,7 +68,7 @@ namespace DX1Utility
             _SpecialKeys.Add(TempSpecial);
 
             TempSpecial = new SpecialKey();
-            //SpecialKey[3] = Scroll Wheel
+            //SpecialKey[4] = Scroll Wheel
             TempSpecial.SpecialID = 4;
             TempSpecial.SpecialName = "Mouse Horizontal Scroll";
             TempSpecial.ReqData = true;
@@ -72,6 +76,35 @@ namespace DX1Utility
             TempSpecial.ExtraDataParams.Add("True", "Right");
             TempSpecial.ExtraDataParams.Add("False", "Left");
             _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[5] = Media Play/Pause
+            TempSpecial.SpecialID = 5;
+            TempSpecial.SpecialName = "Media Play/Pause";
+            TempSpecial.SpecialValue = (ushort)MEDIA_PLAY_PAUSE;
+            _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[6] = Media Stop
+            TempSpecial.SpecialID = 6;
+            TempSpecial.SpecialName = "Media Stop";
+            TempSpecial.SpecialValue = (ushort)MEDIA_STOP;
+            _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[7] = Media Next
+            TempSpecial.SpecialID = 7;
+            TempSpecial.SpecialName = "Media Next Track";
+            TempSpecial.SpecialValue = (ushort)MEDIA_NEXT;
+            _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[8] = Media Previous
+            TempSpecial.SpecialID = 8;
+            TempSpecial.SpecialName = "Media Prev Track";
+            TempSpecial.SpecialValue = (ushort)MEDIA_PREV;
+            _SpecialKeys.Add(TempSpecial);
+
         }
 
         public string GetCustomData(int SpecialID, string InputData)
@@ -197,8 +230,32 @@ namespace DX1Utility
                         break;
                     }
 
+                //case 5:
+                //    {
+                //        //Media Play/Pause
+                //        INPUT input_down = new INPUT();
+                //        input_down.ki.wVk = (ushort)MEDIA_PLAY_PAUSE;
+                //        input_down.ki.wScan = 0;
+                //        input_down.ki.dwExtraInfo = IntPtr.Zero;
+                //        input_down.ki.dwFlags = 0;
+
+                //        INPUT[] input = { input_down };
+
+                //        SendInput(1, input, Marshal.SizeOf(input_down));
+                //        break;
+                //    }
                 default:
                     {
+                        //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
+                        INPUT input_down = new INPUT();
+                        input_down.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
+                        input_down.ki.wScan = 0;
+                        input_down.ki.dwExtraInfo = IntPtr.Zero;
+                        input_down.ki.dwFlags = 0;
+
+                        INPUT[] input = { input_down };
+
+                        SendInput(1, input, Marshal.SizeOf(input_down));
                         break;
                     }
             }
@@ -255,6 +312,16 @@ namespace DX1Utility
 
                 default:
                     {
+                        //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
+                        INPUT input_up = new INPUT();
+                        input_up.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
+                        input_up.ki.wScan = 0;
+                        input_up.ki.dwExtraInfo = IntPtr.Zero;
+                        input_up.ki.dwFlags = KEYEVENTF_KEYUP;
+
+                        INPUT[] input = { input_up };
+
+                        SendInput(1, input, Marshal.SizeOf(input_up)); 
                         break;
                     }
             }

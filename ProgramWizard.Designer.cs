@@ -53,6 +53,8 @@
             this.MacroList = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.RB_False = new System.Windows.Forms.RadioButton();
+            this.RB_True = new System.Windows.Forms.RadioButton();
             this.G_Special = new System.Windows.Forms.DataGridView();
             this.label16 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -68,8 +70,8 @@
             this.T_Conf_Type = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.RB_True = new System.Windows.Forms.RadioButton();
-            this.RB_False = new System.Windows.Forms.RadioButton();
+            this.L_MultiKey = new System.Windows.Forms.ListBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.TB_Wizard.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -271,7 +273,7 @@
             this.label9.Size = new System.Drawing.Size(390, 13);
             this.label9.TabIndex = 10;
             this.label9.Text = "Press the Key you want to be programmed or select a key from the list on the righ" +
-                "t";
+    "t";
             // 
             // label3
             // 
@@ -286,6 +288,8 @@
             // 
             // tabPage10
             // 
+            this.tabPage10.Controls.Add(this.label17);
+            this.tabPage10.Controls.Add(this.L_MultiKey);
             this.tabPage10.Controls.Add(this.label4);
             this.tabPage10.Location = new System.Drawing.Point(4, 22);
             this.tabPage10.Name = "tabPage10";
@@ -360,6 +364,30 @@
             this.tabPage12.TabIndex = 4;
             this.tabPage12.Text = "Special";
             this.tabPage12.UseVisualStyleBackColor = true;
+            // 
+            // RB_False
+            // 
+            this.RB_False.AutoSize = true;
+            this.RB_False.Location = new System.Drawing.Point(215, 72);
+            this.RB_False.Name = "RB_False";
+            this.RB_False.Size = new System.Drawing.Size(50, 17);
+            this.RB_False.TabIndex = 18;
+            this.RB_False.Text = "False";
+            this.RB_False.UseVisualStyleBackColor = true;
+            this.RB_False.Visible = false;
+            // 
+            // RB_True
+            // 
+            this.RB_True.AutoSize = true;
+            this.RB_True.Checked = true;
+            this.RB_True.Location = new System.Drawing.Point(215, 49);
+            this.RB_True.Name = "RB_True";
+            this.RB_True.Size = new System.Drawing.Size(47, 17);
+            this.RB_True.TabIndex = 17;
+            this.RB_True.TabStop = true;
+            this.RB_True.Text = "True";
+            this.RB_True.UseVisualStyleBackColor = true;
+            this.RB_True.Visible = false;
             // 
             // G_Special
             // 
@@ -523,29 +551,23 @@
             this.label8.TabIndex = 9;
             this.label8.Text = "Confirmation";
             // 
-            // RB_True
+            // L_MultiKey
             // 
-            this.RB_True.AutoSize = true;
-            this.RB_True.Checked = true;
-            this.RB_True.Location = new System.Drawing.Point(215, 49);
-            this.RB_True.Name = "RB_True";
-            this.RB_True.Size = new System.Drawing.Size(47, 17);
-            this.RB_True.TabIndex = 17;
-            this.RB_True.TabStop = true;
-            this.RB_True.Text = "True";
-            this.RB_True.UseVisualStyleBackColor = true;
-            this.RB_True.Visible = false;
+            this.L_MultiKey.FormattingEnabled = true;
+            this.L_MultiKey.Location = new System.Drawing.Point(10, 49);
+            this.L_MultiKey.Name = "L_MultiKey";
+            this.L_MultiKey.Size = new System.Drawing.Size(148, 95);
+            this.L_MultiKey.TabIndex = 10;
             // 
-            // RB_False
+            // label17
             // 
-            this.RB_False.AutoSize = true;
-            this.RB_False.Location = new System.Drawing.Point(215, 72);
-            this.RB_False.Name = "RB_False";
-            this.RB_False.Size = new System.Drawing.Size(50, 17);
-            this.RB_False.TabIndex = 18;
-            this.RB_False.Text = "False";
-            this.RB_False.UseVisualStyleBackColor = true;
-            this.RB_False.Visible = false;
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 33);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(286, 13);
+            this.label17.TabIndex = 12;
+            this.label17.Text = "Press the Keys you want to be a part of the MultiKey Macro";
             // 
             // ProgramWizard
             // 
@@ -632,5 +654,7 @@
         private System.Windows.Forms.DataGridView G_Special;
         private System.Windows.Forms.RadioButton RB_False;
         private System.Windows.Forms.RadioButton RB_True;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ListBox L_MultiKey;
     }
 }

@@ -144,6 +144,7 @@ namespace DX1Utility
         private bool RealClose = false;
         private bool HideMinimized = false;
         private SpecialKeyPlayer SpecialKeyPlayer = new SpecialKeyPlayer();
+        private bool DX1UtilityActive = true;
 
         
         // QuickKey programming state manager.
@@ -469,7 +470,10 @@ namespace DX1Utility
                 ProfileSearcher Searcher = new ProfileSearcher();
 
                 if (C_Debug.Checked) { LogDebug("   Handle: " + handle.ToString()); }
+
                 System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
+
+
                 foreach (System.Diagnostics.Process process in processes)
                 {
                     if (process.MainWindowHandle == handle)
@@ -484,7 +488,7 @@ namespace DX1Utility
                         {
                             if (C_Debug.Checked) { LogDebug("   FileName could not be found"); }
                         }
-                        finally 
+                        finally
                         {
                             //Get ProcessName, although currently not used for anything.
                             processName = process.ProcessName;
@@ -497,6 +501,8 @@ namespace DX1Utility
                         break;
                     }
                 }
+
+
                 String newExeName = "";
                 if (exeName != "")
                 {
@@ -534,6 +540,7 @@ namespace DX1Utility
             //ReBuildKeyMap();
             V_Profiles.Text = CurrentProfile.ProfName;
             B_QuickPrg.Text = "Quick Program";
+            DX1UtilityActive = true;
         }
         
         void MapMacroKeys()
@@ -571,6 +578,7 @@ namespace DX1Utility
         protected override void OnDeactivate(System.EventArgs e)
         {
             ApplyKeySet();
+            DX1UtilityActive = false;
         }
 
         protected override void OnResize(System.EventArgs e)
@@ -662,20 +670,26 @@ namespace DX1Utility
                             DEV_BROADCAST_DEVICEHANDLE vol;
                             vol = (DEV_BROADCAST_DEVICEHANDLE) Marshal.PtrToStructure(m.LParam, typeof(DEV_BROADCAST_DEVICEHANDLE));
                             int key = (int)vol.dbch_data[0];
-                            //Highlight DX1 Key that was pressed in G_KeyMap to make finding and programming keys easier.
-                            G_KeyMap.CurrentCell = G_KeyMap.Rows[key-1].Cells[0];
 
-                            if (mKeyProgrammer.DX1KeyDown(key))
+                            if (DX1UtilityActive & key > 0)
                             {
-                                MacroList.ClearSelected();
-                                if (mKeyProgrammer.Active)
+                                //IF Utility is active then Highlight DX1 Key that was pressed in G_KeyMap to make 
+                                //finding and programming keys easier.  Don't play the macro.
+                                G_KeyMap.CurrentCell = G_KeyMap.Rows[key - 1].Cells[0];
+                                if (mKeyProgrammer.DX1KeyDown(key))
                                 {
-                                    //Currently Quick Programming
-                                    B_QuickPrg.Text = "Key - " + mKeyProgrammer.KeyToProgram;
+                                    MacroList.ClearSelected();
+                                    if (mKeyProgrammer.Active)
+                                    {
+                                        //Currently Quick Programming
+                                        B_QuickPrg.Text = "Key - " + mKeyProgrammer.KeyToProgram;
+                                    }
                                 }
                             }
                             else
+                            {
                                 DoSomethingWithMacroKeys(vol.dbch_data);
+                            }
                             break;
                         }
 

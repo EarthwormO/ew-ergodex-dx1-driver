@@ -8,6 +8,9 @@ namespace DX1Utility
 {
     public class SpecialKeyPlayer
     {
+        const int INPUT_MOUSE = 0;
+        const int INPUT_KEYBOARD = 1;
+        const int INPUT_HARDWARE = 2;
         const uint MOUSEEVENTF_MOVE = 0x0001;
         const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         const uint MOUSEEVENTF_LEFTUP = 0x0004;
@@ -19,11 +22,15 @@ namespace DX1Utility
         const uint MOUSEEVENTF_XUP = 0x0100;
         const uint MOUSEEVENTF_VWHEEL = 0x0800;
         const uint MOUSEEVENTF_HWHEEL = 0x1000;
+        const ushort VOLUME_MUTE = 0xAD;
+        const ushort VOLUME_DOWN = 0xAE;
+        const ushort VOLUME_UP = 0xAF;
         const ushort MEDIA_NEXT = 0xB0;
         const ushort MEDIA_PREV = 0xB1;
         const ushort MEDIA_STOP = 0xB2;
         const ushort MEDIA_PLAY_PAUSE = 0xB3;
         const uint KEYEVENTF_KEYUP = 0x0002;
+        const uint KEYEVENTF_SCANCODE = 0x0008;
 
         
         private List<SpecialKey> _SpecialKeys = new List<SpecialKey>();
@@ -105,6 +112,28 @@ namespace DX1Utility
             TempSpecial.SpecialValue = (ushort)MEDIA_PREV;
             _SpecialKeys.Add(TempSpecial);
 
+            TempSpecial = new SpecialKey();
+            //SpecialKey[9] = Volume Mute
+            TempSpecial.SpecialID = 9;
+            TempSpecial.SpecialName = "Volume Mute";
+            TempSpecial.SpecialValue = (ushort)VOLUME_MUTE;
+            _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[10] = Volume Down
+            TempSpecial.SpecialID = 10;
+            TempSpecial.SpecialName = "Volume Down";
+            TempSpecial.SpecialValue = (ushort)VOLUME_DOWN;
+            _SpecialKeys.Add(TempSpecial);
+
+            TempSpecial = new SpecialKey();
+            //SpecialKey[11] = Volumen Up
+            TempSpecial.SpecialID = 11;
+            TempSpecial.SpecialName = "Volume Up";
+            TempSpecial.SpecialValue = (ushort)VOLUME_UP;
+            _SpecialKeys.Add(TempSpecial);
+
+
         }
 
         public string GetCustomData(int SpecialID, string InputData)
@@ -135,8 +164,8 @@ namespace DX1Utility
         }
 
 
-//        [System.Runtime.InteropServices.DllImport("user32.dll")]
-//        public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+        //[System.Runtime.InteropServices.DllImport("user32.dll")]
+        //public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
 
 
         public void KeyDown(KeyMap CurrentKey, string ExtraData = "")
@@ -150,6 +179,7 @@ namespace DX1Utility
                         //Old Code - Mostly Worked
                         //mouse_event(0x02, 0, 0, 0, 0);
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_MOUSE;
                         input_down.mi.dx = 0;
                         input_down.mi.dy = 0;
                         input_down.mi.mouseData = 0;
@@ -164,6 +194,7 @@ namespace DX1Utility
                     {
                         //Right Mouse Button
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_MOUSE;
                         input_down.mi.dx = 0;
                         input_down.mi.dy = 0;
                         input_down.mi.mouseData = 0;
@@ -178,6 +209,7 @@ namespace DX1Utility
                     {
                         //Middle Mouse Button
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_MOUSE;
                         input_down.mi.dx = 0;
                         input_down.mi.dy = 0;
                         input_down.mi.mouseData = 0;
@@ -192,6 +224,7 @@ namespace DX1Utility
                     {
                         //Mouse Vert Scroll
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_MOUSE;
                         input_down.mi.dx = 0;
                         input_down.mi.dy = 0;
 
@@ -213,6 +246,7 @@ namespace DX1Utility
                     {
                         //Mouse Horz Scroll
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_MOUSE;
                         input_down.mi.dx = 0;
                         input_down.mi.dy = 0;
 
@@ -248,6 +282,7 @@ namespace DX1Utility
                     {
                         //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
                         INPUT input_down = new INPUT();
+                        input_down.type = INPUT_KEYBOARD;
                         input_down.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
                         input_down.ki.wScan = 0;
                         input_down.ki.dwExtraInfo = IntPtr.Zero;
@@ -271,6 +306,7 @@ namespace DX1Utility
                         //Left Mouse Button
                         //mouse_event(0x04, 0, 0, 0, 0);
                         INPUT input_up = new INPUT();
+                        input_up.type = INPUT_MOUSE;
                         input_up.mi.dx = 0;
                         input_up.mi.dy = 0;
                         input_up.mi.mouseData = 0;
@@ -285,6 +321,7 @@ namespace DX1Utility
                     {
                         //Right Mouse Button
                         INPUT input_up = new INPUT();
+                        input_up.type = INPUT_MOUSE;
                         input_up.mi.dx = 0;
                         input_up.mi.dy = 0;
                         input_up.mi.mouseData = 0;
@@ -299,6 +336,7 @@ namespace DX1Utility
                     {
                         //Middle Mouse Button
                         INPUT input_up = new INPUT();
+                        input_up.type = INPUT_MOUSE;
                         input_up.mi.dx = 0;
                         input_up.mi.dy = 0;
                         input_up.mi.mouseData = 0;
@@ -314,6 +352,7 @@ namespace DX1Utility
                     {
                         //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
                         INPUT input_up = new INPUT();
+                        input_up.type = INPUT_KEYBOARD;
                         input_up.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
                         input_up.ki.wScan = 0;
                         input_up.ki.dwExtraInfo = IntPtr.Zero;

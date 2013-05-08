@@ -47,6 +47,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.label17 = new System.Windows.Forms.Label();
+            this.L_MultiKey = new System.Windows.Forms.ListBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage11 = new System.Windows.Forms.TabPage();
             this.label15 = new System.Windows.Forms.Label();
@@ -70,8 +72,7 @@
             this.T_Conf_Type = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.L_MultiKey = new System.Windows.Forms.ListBox();
-            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
             this.TB_Wizard.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -273,7 +274,7 @@
             this.label9.Size = new System.Drawing.Size(390, 13);
             this.label9.TabIndex = 10;
             this.label9.Text = "Press the Key you want to be programmed or select a key from the list on the righ" +
-    "t";
+                "t";
             // 
             // label3
             // 
@@ -288,6 +289,7 @@
             // 
             // tabPage10
             // 
+            this.tabPage10.Controls.Add(this.label18);
             this.tabPage10.Controls.Add(this.label17);
             this.tabPage10.Controls.Add(this.L_MultiKey);
             this.tabPage10.Controls.Add(this.label4);
@@ -297,6 +299,24 @@
             this.tabPage10.TabIndex = 2;
             this.tabPage10.Text = "MultiKey";
             this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 33);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(286, 13);
+            this.label17.TabIndex = 12;
+            this.label17.Text = "Press the Keys you want to be a part of the MultiKey Macro";
+            // 
+            // L_MultiKey
+            // 
+            this.L_MultiKey.FormattingEnabled = true;
+            this.L_MultiKey.Location = new System.Drawing.Point(10, 49);
+            this.L_MultiKey.Name = "L_MultiKey";
+            this.L_MultiKey.Size = new System.Drawing.Size(148, 95);
+            this.L_MultiKey.TabIndex = 10;
             // 
             // label4
             // 
@@ -551,23 +571,15 @@
             this.label8.TabIndex = 9;
             this.label8.Text = "Confirmation";
             // 
-            // L_MultiKey
+            // label18
             // 
-            this.L_MultiKey.FormattingEnabled = true;
-            this.L_MultiKey.Location = new System.Drawing.Point(10, 49);
-            this.L_MultiKey.Name = "L_MultiKey";
-            this.L_MultiKey.Size = new System.Drawing.Size(148, 95);
-            this.L_MultiKey.TabIndex = 10;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 33);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(286, 13);
-            this.label17.TabIndex = 12;
-            this.label17.Text = "Press the Keys you want to be a part of the MultiKey Macro";
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(75, 168);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(240, 25);
+            this.label18.TabIndex = 13;
+            this.label18.Text = "Not Implemented Yet!!!!";
             // 
             // ProgramWizard
             // 
@@ -656,5 +668,6 @@
         private System.Windows.Forms.RadioButton RB_True;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ListBox L_MultiKey;
+        private System.Windows.Forms.Label label18;
     }
 }

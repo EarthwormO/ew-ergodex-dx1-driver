@@ -600,7 +600,7 @@ namespace DX1Utility
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (mKeyProgrammer.Active)
+            if (mKeyProgrammer.Active & mKeyProgrammer.KeyToProgram > 0)
             {
                 int keyCode = (int)e.KeyCode;
                 // Seperate left and right shift/ctrl/alt

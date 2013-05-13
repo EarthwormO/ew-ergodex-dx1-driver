@@ -675,6 +675,8 @@ namespace DX1Utility
                             {
                                 //IF Utility is active then Highlight DX1 Key that was pressed in G_KeyMap to make 
                                 //finding and programming keys easier.  Don't play the macro.
+                                if (C_Debug.Checked) { LogDebug("Detected DX1 Key Press Key Number: " + key.ToString() + "was pressed."); }
+
                                 G_KeyMap.CurrentCell = G_KeyMap.Rows[key - 1].Cells[0];
                                 if (mKeyProgrammer.DX1KeyDown(key))
                                 {
@@ -764,10 +766,12 @@ namespace DX1Utility
             QuickSelected.Checked = true;
 
             //Find the selected Profile and load its Keymap
-            CurrentProfile = Searcher.ProfileSearchByName(ProfileList, SelectedItem);
-            LoadButtonsfromProfile(CurrentProfile.ProfName);
-            ProfileManuallySelected = true;
-            ApplyKeySet();
+            SelectProfile(SelectedItem);
+            //Moved code to a central function for 1.4
+            //CurrentProfile = Searcher.ProfileSearchByName(ProfileList, SelectedItem);
+            //LoadButtonsfromProfile(CurrentProfile.ProfName);
+            //ProfileManuallySelected = true;
+            //ApplyKeySet();
 
         }
 
@@ -868,8 +872,10 @@ namespace DX1Utility
                 List<Profiles> programset = new List<Profiles>();
 
                 //Add Default Global Profile
+                InitKeyMap(ref KeyMaps);
                 CurrentProfile = new Profiles();
                 CurrentProfile.ProfName = DefGlobalProf;
+                SaveButtonstoProfile(CurrentProfile.ProfName);
 
                 programset.Add(CurrentProfile);
                 return programset;
@@ -897,11 +903,18 @@ namespace DX1Utility
             B_QuickPrg.Text = "Programming";
             if (!mKeyProgrammer.Active) 
             {
-                SaveButtonstoProfile(CurrentProfile.ProfName);
-                B_QuickPrg.Text = "Quick Program";
+                StopQuickProgram();
             }
         }
-        
+
+        private void StopQuickProgram()
+        {
+            //Code to stop Quick programming when something else occurs outside of Quick programming
+            mKeyProgrammer.Active = false;
+            B_QuickPrg.Text = "Quick Program";
+            SaveButtonstoProfile(CurrentProfile.ProfName);
+        }
+
         private void LoadFromStream(System.IO.Stream inStream)
         {
             UsedToSaveProgramSetv2 temp = UsedToSaveProgramSetv2.Read(inStream);
@@ -926,6 +939,10 @@ namespace DX1Utility
         {
             //Default Key Map
             int TempKey;
+            
+            //Clear current KeyMap if any
+            KeyMaps = new List<KeyMap>();
+
             for (int i = 0; i < kMaxKeys; i++ )
             {
                 TempKey = i+1;
@@ -997,6 +1014,7 @@ namespace DX1Utility
         {
             DialogResult PPropAnswer;
             bool bNewProfile = false;
+            bool clearProfile = false;
             ProfileSearcher Searcher = new ProfileSearcher();
 
             //Disable App Change timer, so CurrentProfile doesn't get edited
@@ -1036,28 +1054,50 @@ namespace DX1Utility
                     if (Searcher.ProfileSearchByName(ProfileList, PProp.GetProfileNameOnly()) != null)
                     {
                         //Profile already exists, do not create this profile
-                        MessageBox.Show("This Profile Name already exists, please edit that profile.  Changes cancelled.","",MessageBoxButtons.OK );
+                        MessageBox.Show("This Profile Name already exists, please edit that profile.  Changes cancelled.", "", MessageBoxButtons.OK);
                         V_Profiles.Text = DefCreateProf;
                     }
                     else
                     {
                         //Create a new Profile of the detail in the PProp dialog
-                        V_Profiles.Items.Add(PProp.GetEditedProfile(ref CurrentProfile));
+                        V_Profiles.Items.Add(PProp.GetEditedProfile(ref CurrentProfile, ref clearProfile));
                         V_Profiles.Text = CurrentProfile.ProfName;
                         ProfileList.Add(CurrentProfile);
-                        //Save Blank set
-                        SaveButtonstoProfile(CurrentProfile.ProfName);
+                        if (clearProfile)
+                        {
+                            //Create all keys as Unassigned
+                            InitKeyMap(ref KeyMaps);
+                            SaveButtonstoProfile(CurrentProfile.ProfName);
+                            ReBuildKeyMap();
+                        }
+                        else
+                        {
+                            //Save current keyset to new profile
+                            SaveButtonstoProfile(CurrentProfile.ProfName);
+                        }
                     }
 
                 }
                 else
                 {
                     //Update the Profile that was selected already
-                    PProp.GetEditedProfile(ref CurrentProfile);
+                    PProp.GetEditedProfile(ref CurrentProfile, ref clearProfile);
+                    if (clearProfile)
+                    {
+                        //Clear all the currently programmed keys on this profile
+                        InitKeyMap(ref KeyMaps);
+                        SaveButtonstoProfile(CurrentProfile.ProfName);
+                    }
                 }
-                
+
             }
-            else V_Profiles.Text = DefCreateProf;
+            else
+            {
+                //Cancel was pressed, check to see if we were creating a new profile
+                //If so, switch to the Global Profile
+                if (bNewProfile) { SelectProfile(DefGlobalProf); }
+            }
+            
 
             //Save Profile List
             SaveProfiles();
@@ -1076,12 +1116,12 @@ namespace DX1Utility
 
         private void V_Profiles_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            ProfileSearcher Searcher = new ProfileSearcher();
+            StopQuickProgram();
+            //ProfileSearcher Searcher = new ProfileSearcher();
             if (V_Profiles.SelectedItem.ToString() != DefCreateProf)
             {
-                //Sets Current Profile to whatever Profile was selected from the list
-                CurrentProfile = Searcher.ProfileSearchByName(ProfileList, V_Profiles.SelectedItem.ToString());
-                LoadButtonsfromProfile(CurrentProfile.ProfName);
+
+                SelectProfile(V_Profiles.SelectedItem.ToString());
                 G_KeyMap.Invalidate();
             }
             else
@@ -1091,6 +1131,23 @@ namespace DX1Utility
                 EditProfile(V_Profiles.SelectedItem.ToString());
             }
             ProfileManuallySelected = true;
+
+            //Set Focus to Grid
+            G_KeyMap.Focus();
+        }
+
+        private bool SelectProfile(string profileName)
+        {
+            //Find the specified Profile and load its Keymap
+            ProfileSearcher Searcher = new ProfileSearcher();
+
+            CurrentProfile = Searcher.ProfileSearchByName(ProfileList, profileName);
+            LoadButtonsfromProfile(CurrentProfile.ProfName);
+            ProfileManuallySelected = true;
+            //ApplyKeySet();
+            ReBuildKeyMap();
+            if (DX1UtilityActive) { V_Profiles.Text = CurrentProfile.ProfName; }
+            return true;
 
         }
 
@@ -1119,7 +1176,7 @@ namespace DX1Utility
                 return;
             }
 
-            ProfConfirm = MessageBox.Show("Are you sure you want to delete this profile and its related Keymap (.pgm)?", "", MessageBoxButtons.YesNo);
+            ProfConfirm = MessageBox.Show("Are you sure you want to delete this profile and its related Keymap (" + V_Profiles.Text + ".pgm)?", "", MessageBoxButtons.YesNo);
             if (ProfConfirm == DialogResult.Yes)
             {
                 //Delete the file if it exists
@@ -1131,7 +1188,7 @@ namespace DX1Utility
                 ProfileList.RemoveAll((x) => x.ProfName == V_Profiles.Text);
                 V_Profiles.Items.Remove(V_Profiles.Text);
                 SaveProfiles();
-                V_Profiles.Text = DefCreateProf;
+                SelectProfile(DefGlobalProf);
                 G_KeyMap.Invalidate();
 
             }
@@ -1177,6 +1234,8 @@ namespace DX1Utility
             DialogResult KeyWizardAnswer;
             byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index + 1);
 
+            StopQuickProgram();
+
             //Right-Click Menu of DataGrid, Program
             ProgramWizard KeyWizard = new ProgramWizard();
             KeyWizard.InitProgramWizard(SpecialKeyPlayer, (byte)CurrentKey);
@@ -1206,14 +1265,16 @@ namespace DX1Utility
             //Clearing Dx1Key programming
             byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index);
 
+            StopQuickProgram();
+
             KeyMaps[CurrentKey].Action = 0;
             KeyMaps[CurrentKey].Type = 0;
-            KeyMaps[CurrentKey].Description = "";
+            KeyMaps[CurrentKey].Description = "Unassigned";
             KeyMaps[CurrentKey].MacroName = "";
             KeyMaps[CurrentKey].KeyName = "";
             KeyMaps[CurrentKey].CustomData = "";
-            G_KeyMap.Invalidate();
-
+            SaveButtonstoProfile(CurrentProfile.ProfName);
+            ReBuildKeyMap();
         }
 
         private void PropertiesStripMenuItem_Click(object sender, EventArgs e)
@@ -1221,6 +1282,8 @@ namespace DX1Utility
             //Directly displaying the properties of the key
             DialogResult KeyWizardAnswer;
             byte CurrentKey = (byte)(G_KeyMap.CurrentRow.Index);
+
+            StopQuickProgram();
 
             ProgramWizard KeyWizard = new ProgramWizard();
             KeyWizard.InitKeyProperties(KeyMaps[CurrentKey]);

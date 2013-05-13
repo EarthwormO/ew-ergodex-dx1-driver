@@ -78,6 +78,7 @@
             // 
             // V_Profiles
             // 
+            this.V_Profiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.V_Profiles.FormattingEnabled = true;
             this.V_Profiles.Location = new System.Drawing.Point(76, 10);
             this.V_Profiles.Name = "V_Profiles";

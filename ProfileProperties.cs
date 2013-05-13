@@ -23,15 +23,22 @@ namespace DX1Utility
             T_ProfilePath.Text = CurrentProfile.ProfPath;
             C_Enabled.Checked = CurrentProfile.ProfEnabled;
             C_QuickMenu.Checked = CurrentProfile.QuickMenu;
-            if (CurrentProfile.ProfName != "New") { T_ProfileName.Enabled = false; }
+            if (CurrentProfile.ProfName != "New") 
+            {
+                //This is Not a new profile, don't allow editing of the Profile name
+                T_ProfileName.Enabled = false;
+                //Change 
+                C_Blank.Text = "Clear all programmed keys";
+            }
         }
         
-        public string GetEditedProfile(ref Profiles CurrentProfile)
+        public string GetEditedProfile(ref Profiles CurrentProfile, ref bool clearProfile)
         {
             CurrentProfile.ProfName  = T_ProfileName.Text;
             CurrentProfile.ProfPath = T_ProfilePath.Text.ToLower();
             CurrentProfile.ProfEnabled = C_Enabled.Checked;
             CurrentProfile.QuickMenu = C_QuickMenu.Checked;
+            clearProfile = C_Blank.Checked;
             return T_ProfileName.Text;
         }
 

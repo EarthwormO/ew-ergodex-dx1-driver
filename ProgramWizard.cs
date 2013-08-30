@@ -23,7 +23,7 @@ namespace DX1Utility
         private int[] CurrentTabOrder;
         private int CurrentIndex;
         private KeyMap CurrentKeyMap = new KeyMap();
-        private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro" };
+        private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro", "Special" };
         private SpecialKeyPlayer _SpecialKeyPlayer;
 
         public ProgramWizard()
@@ -132,7 +132,7 @@ namespace DX1Utility
                         else
                         {
                             CurrentTabOrder = SpecialKey;
-                            T_Conf_Type.Text = "Special Function";
+                            T_Conf_Type.Text = "Special";
                         }
                         //Enable Back Button before leaving welcome tab
                         B_Back.Enabled = true;

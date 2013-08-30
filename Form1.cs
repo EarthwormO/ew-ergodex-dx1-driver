@@ -998,6 +998,7 @@ namespace DX1Utility
                 {
                     mKeyProgrammer.AssignMacro(MacroList.SelectedItem.ToString(), ref KeyMaps);
                     B_QuickPrg.Text = "Programming";
+                    G_KeyMap.Invalidate();
                 }
 
             }
@@ -1120,7 +1121,6 @@ namespace DX1Utility
             //ProfileSearcher Searcher = new ProfileSearcher();
             if (V_Profiles.SelectedItem.ToString() != DefCreateProf)
             {
-
                 SelectProfile(V_Profiles.SelectedItem.ToString());
                 G_KeyMap.Invalidate();
             }
@@ -1144,9 +1144,11 @@ namespace DX1Utility
             CurrentProfile = Searcher.ProfileSearchByName(ProfileList, profileName);
             LoadButtonsfromProfile(CurrentProfile.ProfName);
             ProfileManuallySelected = true;
-            //ApplyKeySet();
             ReBuildKeyMap();
-            if (DX1UtilityActive) { V_Profiles.Text = CurrentProfile.ProfName; }
+            if (DX1UtilityActive)
+            { V_Profiles.Text = CurrentProfile.ProfName; }
+            else
+            { ApplyKeySet(); }
             return true;
 
         }

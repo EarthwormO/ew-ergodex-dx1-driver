@@ -30,7 +30,7 @@
     <ProductName>DX1 OpenSource Driver</ProductName>
     <PublisherName>Earthworm</PublisherName>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.4.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

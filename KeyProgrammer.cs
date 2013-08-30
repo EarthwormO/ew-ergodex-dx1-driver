@@ -154,10 +154,10 @@ namespace DX1Utility
         {
             if (active && keyToProgram != 0)
             {
-                KeyMaps[keyToProgram].Action = 0;
-                KeyMaps[keyToProgram].Type = 0x3;
-                KeyMaps[keyToProgram].Description = macroName;
-                KeyMaps[keyToProgram].MacroName = macroName;
+                KeyMaps[keyToProgram-1].Action = 0;
+                KeyMaps[keyToProgram-1].Type = 0x3;
+                KeyMaps[keyToProgram-1].Description = macroName;
+                KeyMaps[keyToProgram-1].MacroName = macroName;
                 //int offset = (keyToProgram - 1) * 3;
                 //mKeyMap[offset++] = (Byte)keyToProgram;
                 //mKeyMap[offset++] = 3;

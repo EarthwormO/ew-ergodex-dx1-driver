@@ -136,7 +136,7 @@ namespace DX1Interface
             SP_DEVICE_INTERFACE_DETAIL_DATA didd = new SP_DEVICE_INTERFACE_DETAIL_DATA();
             if (requiredSize < Marshal.SizeOf(didd))
             {
-                didd.cbSize = 6;
+                didd.cbSize = 8;  //Test for 64bit
                 uint length = requiredSize;
                 result = SetupDiGetDeviceInterfaceDetail(DeviceInfo, ref deviceInterfaceData, ref didd, length, out requiredSize, IntPtr.Zero);
             }

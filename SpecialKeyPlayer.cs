@@ -400,11 +400,11 @@ namespace DX1Utility
         {
             [FieldOffset(0)]
             public int type;
-            [FieldOffset(4)] //*
+            [FieldOffset(8)] //*
             public MOUSEINPUT mi;
-            [FieldOffset(4)] //*
+            [FieldOffset(8)] //*
             public KEYBDINPUT ki;
-            [FieldOffset(4)] //*
+            [FieldOffset(8)] //*
             HARDWAREINPUT hi;
         }
 

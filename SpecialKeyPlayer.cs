@@ -171,199 +171,302 @@ namespace DX1Utility
         public void KeyDown(KeyMap CurrentKey, string ExtraData = "")
         {
             //A special key has been pressed
-            switch (CurrentKey.Action)
+            //Determine the type of Special Key being pressed
+            //Added for Issue #19
+            switch (CurrentKey.Type)
             {
-                case 0:
-                    {
-                        //Left Mouse Button
-                        //Old Code - Mostly Worked
-                        //mouse_event(0x02, 0, 0, 0, 0);
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_MOUSE;
-                        input_down.mi.dx = 0;
-                        input_down.mi.dy = 0;
-                        input_down.mi.mouseData = 0;
-                        input_down.mi.dwFlags = (int)MOUSEEVENTF_LEFTDOWN;
-
-                        INPUT[] input = { input_down };
-
-                        SendInput(1, input, Marshal.SizeOf(input_down));
-                        break;
-                    }
-                case 1:
-                    {
-                        //Right Mouse Button
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_MOUSE;
-                        input_down.mi.dx = 0;
-                        input_down.mi.dy = 0;
-                        input_down.mi.mouseData = 0;
-                        input_down.mi.dwFlags = (int)MOUSEEVENTF_RIGHTDOWN;
-
-                        INPUT[] input = { input_down };
-
-                        SendInput(1, input, Marshal.SizeOf(input_down));
-                        break;
-                    }
-                case 2:
-                    {
-                        //Middle Mouse Button
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_MOUSE;
-                        input_down.mi.dx = 0;
-                        input_down.mi.dy = 0;
-                        input_down.mi.mouseData = 0;
-                        input_down.mi.dwFlags = (int)MOUSEEVENTF_MIDDLEDOWN;
-
-                        INPUT[] input = { input_down };
-
-                        SendInput(1, input, Marshal.SizeOf(input_down));
-                        break;
-                    }
-                case 3:
-                    {
-                        //Mouse Vert Scroll
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_MOUSE;
-                        input_down.mi.dx = 0;
-                        input_down.mi.dy = 0;
-
-                        //Check to see if scrolling Up or down
-                        if (CurrentKey.CustomData == "1")
-                            input_down.mi.mouseData = 100;
-                        else
-                            input_down.mi.mouseData = -100;
-
-                        input_down.mi.dwFlags = (int)MOUSEEVENTF_VWHEEL;
-
-                        INPUT[] input = { input_down };
-
-                        SendInput(1, input, Marshal.SizeOf(input_down));
-                        break;
-                    }
-
                 case 4:
                     {
-                        //Mouse Horz Scroll
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_MOUSE;
-                        input_down.mi.dx = 0;
-                        input_down.mi.dy = 0;
+                        //4 = Special Key (Mouse, Media, etc)
+                        switch (CurrentKey.Action)
+                        {
+                            case 0:
+                                {
+                                    //Left Mouse Button
+                                    //Old Code - Mostly Worked
+                                    //mouse_event(0x02, 0, 0, 0, 0);
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_MOUSE;
+                                    input_down.mi.dx = 0;
+                                    input_down.mi.dy = 0;
+                                    input_down.mi.mouseData = 0;
+                                    input_down.mi.dwFlags = (int)MOUSEEVENTF_LEFTDOWN;
 
-                        //Check to see if scrolling Up or down
-                        if (CurrentKey.CustomData == "1")
-                            input_down.mi.mouseData = 100;
-                        else
-                            input_down.mi.mouseData = -100;
+                                    INPUT[] input = { input_down };
 
-                        input_down.mi.dwFlags = (int)MOUSEEVENTF_HWHEEL;
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    //Right Mouse Button
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_MOUSE;
+                                    input_down.mi.dx = 0;
+                                    input_down.mi.dy = 0;
+                                    input_down.mi.mouseData = 0;
+                                    input_down.mi.dwFlags = (int)MOUSEEVENTF_RIGHTDOWN;
 
-                        INPUT[] input = { input_down };
+                                    INPUT[] input = { input_down };
 
-                        SendInput(1, input, Marshal.SizeOf(input_down));
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    //Middle Mouse Button
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_MOUSE;
+                                    input_down.mi.dx = 0;
+                                    input_down.mi.dy = 0;
+                                    input_down.mi.mouseData = 0;
+                                    input_down.mi.dwFlags = (int)MOUSEEVENTF_MIDDLEDOWN;
+
+                                    INPUT[] input = { input_down };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    //Mouse Vert Scroll
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_MOUSE;
+                                    input_down.mi.dx = 0;
+                                    input_down.mi.dy = 0;
+
+                                    //Check to see if scrolling Up or down
+                                    if (CurrentKey.CustomData == "1")
+                                        input_down.mi.mouseData = 100;
+                                    else
+                                        input_down.mi.mouseData = -100;
+
+                                    input_down.mi.dwFlags = (int)MOUSEEVENTF_VWHEEL;
+
+                                    INPUT[] input = { input_down };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    break;
+                                }
+
+                            case 4:
+                                {
+                                    //Mouse Horz Scroll
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_MOUSE;
+                                    input_down.mi.dx = 0;
+                                    input_down.mi.dy = 0;
+
+                                    //Check to see if scrolling Up or down
+                                    if (CurrentKey.CustomData == "1")
+                                        input_down.mi.mouseData = 100;
+                                    else
+                                        input_down.mi.mouseData = -100;
+
+                                    input_down.mi.dwFlags = (int)MOUSEEVENTF_HWHEEL;
+
+                                    INPUT[] input = { input_down };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    break;
+                                }
+
+                            //case 5:
+                            //    {
+                            //        //Media Play/Pause
+                            //        INPUT input_down = new INPUT();
+                            //        input_down.ki.wVk = (ushort)MEDIA_PLAY_PAUSE;
+                            //        input_down.ki.wScan = 0;
+                            //        input_down.ki.dwExtraInfo = IntPtr.Zero;
+                            //        input_down.ki.dwFlags = 0;
+
+                            //        INPUT[] input = { input_down };
+
+                            //        SendInput(1, input, Marshal.SizeOf(input_down));
+                            //        break;
+                            //    }
+                            default:
+                                {
+                                    //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_KEYBOARD;
+                                    input_down.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
+                                    input_down.ki.wScan = 0;
+                                    input_down.ki.dwExtraInfo = IntPtr.Zero;
+                                    input_down.ki.dwFlags = 0;
+
+                                    INPUT[] input = { input_down };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+
+                                    break;
+                                }
+                        }
                         break;
                     }
+                case 5:
+                    {
+                        //5 = Toggle Key
+                        //Added for Issue #19
+                        DebugLog.Instance.writeLog("Attempting to Toggle key: " + CurrentKey.Action, true);
+                        //Check if Key is "0", if so press key (Ignore key in all other states)
+                        if (Bags.getValue(CurrentKey.Action) == 0)
+                        {
+                            INPUT input_down = new INPUT();
+                            input_down.type = INPUT_KEYBOARD;
+                            input_down.ki.wVk = CurrentKey.Action;
+                            input_down.ki.wScan = 0;
+                            input_down.ki.dwExtraInfo = IntPtr.Zero;
+                            input_down.ki.dwFlags = 0;
 
-                //case 5:
-                //    {
-                //        //Media Play/Pause
-                //        INPUT input_down = new INPUT();
-                //        input_down.ki.wVk = (ushort)MEDIA_PLAY_PAUSE;
-                //        input_down.ki.wScan = 0;
-                //        input_down.ki.dwExtraInfo = IntPtr.Zero;
-                //        input_down.ki.dwFlags = 0;
+                            INPUT[] input = { input_down };
 
-                //        INPUT[] input = { input_down };
+                            SendInput(1, input, Marshal.SizeOf(input_down));
 
-                //        SendInput(1, input, Marshal.SizeOf(input_down));
-                //        break;
-                //    }
+                            //Set Flag to "ON"
+                            //Add Key being "pressed" to Dictionary for later removal
+                            Bags.AddToggle(CurrentKey.Action, 2);
+                            DebugLog.Instance.writeLog("         Key Toggled: " + CurrentKey.Action);
+                        }
+                        else
+                        {
+                            DebugLog.Instance.writeLog("         Key NOT Toggled: " + CurrentKey.Action);
+                        }
+                        break;
+                    }
                 default:
                     {
-                        //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
-                        INPUT input_down = new INPUT();
-                        input_down.type = INPUT_KEYBOARD;
-                        input_down.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
-                        input_down.ki.wScan = 0;
-                        input_down.ki.dwExtraInfo = IntPtr.Zero;
-                        input_down.ki.dwFlags = 0;
-
-                        INPUT[] input = { input_down };
-
-                        SendInput(1, input, Marshal.SizeOf(input_down));
                         break;
                     }
             }
+
         }
 
         public void KeyUp(KeyMap CurrentKey, string ExtraData = "")
         {
             //A special key has been released
-            switch (CurrentKey.Action)
+            //Determine the type of Special Key being pressed
+            //Added for Issue #19
+            switch (CurrentKey.Type)
             {
-                case 0:
+                case 4:
                     {
-                        //Left Mouse Button
-                        //mouse_event(0x04, 0, 0, 0, 0);
-                        INPUT input_up = new INPUT();
-                        input_up.type = INPUT_MOUSE;
-                        input_up.mi.dx = 0;
-                        input_up.mi.dy = 0;
-                        input_up.mi.mouseData = 0;
-                        input_up.mi.dwFlags = (int)MOUSEEVENTF_LEFTUP;
+                        //4 = Special Key (Mouse, Media, etc)
+                        switch (CurrentKey.Action)
+                        {
+                            case 0:
+                                {
+                                    //Left Mouse Button
+                                    //mouse_event(0x04, 0, 0, 0, 0);
+                                    INPUT input_up = new INPUT();
+                                    input_up.type = INPUT_MOUSE;
+                                    input_up.mi.dx = 0;
+                                    input_up.mi.dy = 0;
+                                    input_up.mi.mouseData = 0;
+                                    input_up.mi.dwFlags = (int)MOUSEEVENTF_LEFTUP;
 
-                        INPUT[] input = { input_up };
+                                    INPUT[] input = { input_up };
 
-                        SendInput(1, input, Marshal.SizeOf(input_up));
+                                    SendInput(1, input, Marshal.SizeOf(input_up));
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    //Right Mouse Button
+                                    INPUT input_up = new INPUT();
+                                    input_up.type = INPUT_MOUSE;
+                                    input_up.mi.dx = 0;
+                                    input_up.mi.dy = 0;
+                                    input_up.mi.mouseData = 0;
+                                    input_up.mi.dwFlags = (int)MOUSEEVENTF_RIGHTUP;
+
+                                    INPUT[] input = { input_up };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_up));
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    //Middle Mouse Button
+                                    INPUT input_up = new INPUT();
+                                    input_up.type = INPUT_MOUSE;
+                                    input_up.mi.dx = 0;
+                                    input_up.mi.dy = 0;
+                                    input_up.mi.mouseData = 0;
+                                    input_up.mi.dwFlags = (int)MOUSEEVENTF_MIDDLEUP;
+
+                                    INPUT[] input = { input_up };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_up));
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
+                                    INPUT input_up = new INPUT();
+                                    input_up.type = INPUT_KEYBOARD;
+                                    input_up.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
+                                    input_up.ki.wScan = 0;
+                                    input_up.ki.dwExtraInfo = IntPtr.Zero;
+                                    input_up.ki.dwFlags = KEYEVENTF_KEYUP;
+
+                                    INPUT[] input = { input_up };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_up));
+                                    break;
+                                }
+                        }
                         break;
                     }
-                case 1:
+                case 5:
                     {
-                        //Right Mouse Button
-                        INPUT input_up = new INPUT();
-                        input_up.type = INPUT_MOUSE;
-                        input_up.mi.dx = 0;
-                        input_up.mi.dy = 0;
-                        input_up.mi.mouseData = 0;
-                        input_up.mi.dwFlags = (int)MOUSEEVENTF_RIGHTUP;
+                        //5 = Toggle Key
+                        //Added for Issue #19
 
-                        INPUT[] input = { input_up };
+                        switch (Bags.getValue(CurrentKey.Action))
+                        {
+                            case 1:
+                                {
+                                    //One Key-up has already been ignored, take this one and release the Key
+                                    INPUT input_down = new INPUT();
+                                    input_down.type = INPUT_KEYBOARD;
+                                    input_down.ki.wVk = CurrentKey.Action;
+                                    input_down.ki.wScan = 0;
+                                    input_down.ki.dwExtraInfo = IntPtr.Zero;
+                                    input_down.ki.dwFlags = KEYEVENTF_KEYUP;
 
-                        SendInput(1, input, Marshal.SizeOf(input_up));
+                                    INPUT[] input = { input_down };
+
+                                    SendInput(1, input, Marshal.SizeOf(input_down));
+                                    //Remove Key being "pressed" from Dictionary so it isn't released again later
+                                    Bags.RemoveToggle(CurrentKey.Action);
+                                    DebugLog.Instance.writeLog("         Key Upped: " + CurrentKey.Action);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    //Key just pressed ignore this key-up, change State to 1
+                                    Bags.DecValue(CurrentKey.Action);
+                                    DebugLog.Instance.writeLog("         First Key Up ignored: " + CurrentKey.Action);
+                                    break;
+                                }
+                            default:
+                                {
+                                    //Should never hit here.
+                                    DebugLog.Instance.writeLog("         Unknown State for key: " + CurrentKey.Action);
+                                    break;
+                                }
+                        }
                         break;
                     }
-                case 2:
-                    {
-                        //Middle Mouse Button
-                        INPUT input_up = new INPUT();
-                        input_up.type = INPUT_MOUSE;
-                        input_up.mi.dx = 0;
-                        input_up.mi.dy = 0;
-                        input_up.mi.mouseData = 0;
-                        input_up.mi.dwFlags = (int)MOUSEEVENTF_MIDDLEUP;
-
-                        INPUT[] input = { input_up };
-
-                        SendInput(1, input, Marshal.SizeOf(input_up));
-                        break;
-                    }
-
                 default:
                     {
-                        //Used for any Special Key that can be sent just with the SpecialValue to the Keyboard Input
-                        INPUT input_up = new INPUT();
-                        input_up.type = INPUT_KEYBOARD;
-                        input_up.ki.wVk = _SpecialKeys[CurrentKey.Action].SpecialValue;
-                        input_up.ki.wScan = 0;
-                        input_up.ki.dwExtraInfo = IntPtr.Zero;
-                        input_up.ki.dwFlags = KEYEVENTF_KEYUP;
-
-                        INPUT[] input = { input_up };
-
-                        SendInput(1, input, Marshal.SizeOf(input_up)); 
                         break;
                     }
             }
+
+
         }
 
         [StructLayout(LayoutKind.Sequential)]

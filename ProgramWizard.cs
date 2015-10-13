@@ -19,11 +19,12 @@ namespace DX1Utility
         static int[] MultiKey = new int[4] { 0, 2, 5, 6 };
         static int[] MacroKey = new int[3] { 0, 3, 6 };
         static int[] SpecialKey = new int[3] { 0, 4, 6 };
+        static int[] ToggleKey = new int[3] { 0, 7, 6 };                                //Added for issue #19
 
         private int[] CurrentTabOrder;
         private int CurrentIndex;
         private KeyMap CurrentKeyMap = new KeyMap();
-        private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro", "Special" };
+        private string[] sKeyBindings = new string[] { "", "Single Key", "Modifier Key", "Macro", "Special", "Toggle" };
         private SpecialKeyPlayer _SpecialKeyPlayer;
 
         public ProgramWizard()
@@ -129,6 +130,12 @@ namespace DX1Utility
                             CurrentTabOrder = MacroKey;
                             T_Conf_Type.Text = "Timed Macro";
                         }
+                        else if (R_Toggle.Checked)
+                        {
+                            //Added for issue #19
+                            CurrentTabOrder = ToggleKey;
+                            T_Conf_Type.Text = "Toggle Key";
+                        }
                         else
                         {
                             CurrentTabOrder = SpecialKey;
@@ -165,6 +172,15 @@ namespace DX1Utility
                         //Leaving Description tab
                         CurrentKeyMap.Description = T_Description.Text;
                         T_Conf_Desc.Text = CurrentKeyMap.Description;
+                        CurrentIndex++;
+                        break;
+                    }
+                case 7:
+                    {
+                        //Added for issue #19
+                        //Leaving Toggle tab
+                        CurrentKeyMap.Description = T_Description.Text;
+                        T_Conf_Actual.Text = T_TKey.Text;
                         CurrentIndex++;
                         break;
                     }
@@ -251,6 +267,35 @@ namespace DX1Utility
                             //On MultiKey programming, capture all keystrokes and assign up to 4 to the L_MultiKey ListBox
                             break;
                         }
+                case 7:
+                    {
+                        //Added for issue #19
+                        //On Toggle Key programming, capture all keystrokes and assign last keystroke to key
+
+                        int tempkey = (int)e.KeyCode;
+                        T_TKey.Text = e.KeyCode.ToString();
+                        // Seperate left and right shift/ctrl/alt
+                        if (tempkey >= 0x10 && tempkey <= 0x12)
+                        {
+                            Byte[] state = new Byte[256];
+                            GetKeyboardState(state);
+                            tempkey = 0xa0 + 2 * (tempkey - 0x10);
+                            if ((state[tempkey + 1] & 0x80) != 0)
+                                tempkey++;          // RHS version
+                        }
+
+                        CurrentKeyMap.Description = e.KeyCode.ToString() + " (T)";
+                        CurrentKeyMap.KeyName = e.KeyCode.ToString() + " (T)";
+                        CurrentKeyMap.Action = (byte)tempkey;
+                        CurrentKeyMap.Type = 5;
+
+                        T_Description.Text = CurrentKeyMap.Description;
+                        T_Conf_Desc.Text = CurrentKeyMap.Description;
+
+                        e.SuppressKeyPress = true;
+                        break;
+                    }
+
                 default:
                     {
                         break;
@@ -317,7 +362,7 @@ namespace DX1Utility
                 CurrentKeyMap.Description = G_Special.Rows[G_Special.CurrentRow.Index].Cells[0].Value.ToString();
                 T_Description.Text = CurrentKeyMap.Description;
                 T_Conf_Desc.Text = CurrentKeyMap.Description;
-
+                
                 
 
             }

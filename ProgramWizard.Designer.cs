@@ -36,6 +36,7 @@
             this.B_Next = new System.Windows.Forms.Button();
             this.TB_Wizard = new DX1Utility.WizardPages();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.R_Toggle = new System.Windows.Forms.RadioButton();
             this.R_Special = new System.Windows.Forms.RadioButton();
             this.R_Macro = new System.Windows.Forms.RadioButton();
             this.R_Multi = new System.Windows.Forms.RadioButton();
@@ -47,6 +48,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.L_MultiKey = new System.Windows.Forms.ListBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -72,7 +74,13 @@
             this.T_Conf_Type = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.T_TKey = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.TB_Wizard.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -82,6 +90,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.G_Special)).BeginInit();
             this.tabPage13.SuspendLayout();
             this.tabPage14.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -157,6 +166,7 @@
             this.TB_Wizard.Controls.Add(this.tabPage12);
             this.TB_Wizard.Controls.Add(this.tabPage13);
             this.TB_Wizard.Controls.Add(this.tabPage14);
+            this.TB_Wizard.Controls.Add(this.tabPage1);
             this.TB_Wizard.Location = new System.Drawing.Point(12, 34);
             this.TB_Wizard.Name = "TB_Wizard";
             this.TB_Wizard.SelectedIndex = 0;
@@ -165,6 +175,7 @@
             // 
             // tabPage8
             // 
+            this.tabPage8.Controls.Add(this.R_Toggle);
             this.tabPage8.Controls.Add(this.R_Special);
             this.tabPage8.Controls.Add(this.R_Macro);
             this.tabPage8.Controls.Add(this.R_Multi);
@@ -177,6 +188,16 @@
             this.tabPage8.TabIndex = 0;
             this.tabPage8.Text = "Type";
             this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // R_Toggle
+            // 
+            this.R_Toggle.AutoSize = true;
+            this.R_Toggle.Location = new System.Drawing.Point(24, 146);
+            this.R_Toggle.Name = "R_Toggle";
+            this.R_Toggle.Size = new System.Drawing.Size(79, 17);
+            this.R_Toggle.TabIndex = 13;
+            this.R_Toggle.Text = "Toggle Key";
+            this.R_Toggle.UseVisualStyleBackColor = true;
             // 
             // R_Special
             // 
@@ -274,7 +295,7 @@
             this.label9.Size = new System.Drawing.Size(390, 13);
             this.label9.TabIndex = 10;
             this.label9.Text = "Press the Key you want to be programmed or select a key from the list on the righ" +
-                "t";
+    "t";
             // 
             // label3
             // 
@@ -299,6 +320,16 @@
             this.tabPage10.TabIndex = 2;
             this.tabPage10.Text = "MultiKey";
             this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(75, 168);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(240, 25);
+            this.label18.TabIndex = 13;
+            this.label18.Text = "Not Implemented Yet!!!!";
             // 
             // label17
             // 
@@ -571,15 +602,83 @@
             this.label8.TabIndex = 9;
             this.label8.Text = "Confirmation";
             // 
-            // label18
+            // tabPage1
             // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(75, 168);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(240, 25);
-            this.label18.TabIndex = 13;
-            this.label18.Text = "Not Implemented Yet!!!!";
+            this.tabPage1.Controls.Add(this.label23);
+            this.tabPage1.Controls.Add(this.label22);
+            this.tabPage1.Controls.Add(this.label21);
+            this.tabPage1.Controls.Add(this.T_TKey);
+            this.tabPage1.Controls.Add(this.label20);
+            this.tabPage1.Controls.Add(this.label19);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(529, 293);
+            this.tabPage1.TabIndex = 7;
+            this.tabPage1.Text = "Toggle";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(7, 166);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(377, 13);
+            this.label23.TabIndex = 16;
+            this.label23.Text = "only the affect will be visible.   It is advised to only use modifier keys as Tog" +
+    "gle.";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(7, 153);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(406, 13);
+            this.label22.TabIndex = 15;
+            this.label22.Text = "Warning, there will be no visual or other indication a key is currently toggled o" +
+    "n or off,";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(66, 108);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(66, 13);
+            this.label21.TabIndex = 14;
+            this.label21.Text = "Pressed Key";
+            // 
+            // T_TKey
+            // 
+            this.T_TKey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.T_TKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.T_TKey.Location = new System.Drawing.Point(10, 61);
+            this.T_TKey.Name = "T_TKey";
+            this.T_TKey.Size = new System.Drawing.Size(184, 44);
+            this.T_TKey.TabIndex = 13;
+            this.T_TKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(7, 33);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(183, 13);
+            this.label20.TabIndex = 11;
+            this.label20.Text = "Press the Key you want to be toggled";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label19.Location = new System.Drawing.Point(6, 3);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(196, 20);
+            this.label19.TabIndex = 10;
+            this.label19.Text = "Toggle Key Assignment";
             // 
             // ProgramWizard
             // 
@@ -617,6 +716,8 @@
             this.tabPage13.PerformLayout();
             this.tabPage14.ResumeLayout(false);
             this.tabPage14.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -669,5 +770,13 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ListBox L_MultiKey;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.RadioButton R_Toggle;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox T_TKey;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label22;
     }
 }

@@ -463,13 +463,13 @@ namespace DX1Utility
             //Do not run excesive code if App has not changed from last tick, or App is DX1Utility
             if (handle != lastHandle && handle != SelfHandle)
             {
-                if (C_Debug.Checked) { LogDebug("New Active App detected: ", true); }
+                DebugLog.Instance.writeLog("New Active App detected: ", true);
                 lastHandle = handle;
                 String processName = "";
                 String exeName = "";
                 ProfileSearcher Searcher = new ProfileSearcher();
 
-                if (C_Debug.Checked) { LogDebug("   Handle: " + handle.ToString()); }
+                DebugLog.Instance.writeLog("   Handle: " + handle.ToString(), true);
 
                 System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
 
@@ -482,17 +482,17 @@ namespace DX1Utility
                         {
                             //This works on some apps not others
                             exeName = process.MainModule.FileName;
-                            if (C_Debug.Checked) { LogDebug("   FileName: " + exeName.ToLower()); }
+                            DebugLog.Instance.writeLog("   FileName: " + exeName.ToLower());
                         }
                         catch (Exception)
                         {
-                            if (C_Debug.Checked) { LogDebug("   FileName could not be found"); }
+                            DebugLog.Instance.writeLog("   FileName could not be found");
                         }
                         finally
                         {
                             //Get ProcessName, although currently not used for anything.
                             processName = process.ProcessName;
-                            if (C_Debug.Checked) { LogDebug("   processName: " + processName.ToLower()); }
+                            DebugLog.Instance.writeLog("   processName: " + processName.ToLower());
                             if (processName.ToLower().Contains("dx1utility"))
                             {
                                 SelfHandle = handle;
@@ -514,7 +514,7 @@ namespace DX1Utility
                 {
                     //Profile was found, load that profile and apply Keymap
                     CurrentProfile = Searcher.ProfileSearchByPath(ProfileList, newExeName);
-                    if (C_Debug.Checked) { LogDebug("   Profile Found: " + CurrentProfile.ProfName); }
+                    DebugLog.Instance.writeLog("   Profile Found: " + CurrentProfile.ProfName);
                     LoadButtonsfromProfile(CurrentProfile.ProfName);
                     ApplyKeySet();
                 }
@@ -523,7 +523,7 @@ namespace DX1Utility
                     //Profile Path not found, Select the Global Profile if current Profile wasn't manually selected
                     if (!ProfileManuallySelected)
                     {
-                        if (C_Debug.Checked) { LogDebug("   No Profile Found Loading " + DefGlobalProf + " Prfoile"); }
+                        DebugLog.Instance.writeLog("   No Profile Found Loading " + DefGlobalProf + " Prfoile");
                         SelectGlobalProfile();
                     }
                 }
@@ -558,7 +558,7 @@ namespace DX1Utility
                     else
                     {
                         //Macro not found
-                        LogDebug("Error Macro listed wasn't found: " + DxKey.MacroName, true);
+                        DebugLog.Instance.writeLog("Error Macro listed wasn't found: " + DxKey.MacroName, true);
                     }
                 }
 
@@ -673,9 +673,9 @@ namespace DX1Utility
 
                             if (DX1UtilityActive & key > 0)
                             {
-                                //IF Utility is active then Highlight DX1 Key that was pressed in G_KeyMap to make 
-                                //finding and programming keys easier.  Don't play the macro.
-                                if (C_Debug.Checked) { LogDebug("Detected DX1 Key Press Key Number: " + key.ToString() + "was pressed."); }
+                                        //IF Utility is active then Highlight DX1 Key that was pressed in G_KeyMap to make 
+                                        //finding and programming keys easier.  Don't play the macro.
+                                        DebugLog.Instance.writeLog("Detected DX1 Key Press Key Number: " + key.ToString() + "was pressed.");
 
                                 G_KeyMap.CurrentCell = G_KeyMap.Rows[key - 1].Cells[0];
                                 if (mKeyProgrammer.DX1KeyDown(key))
@@ -775,22 +775,6 @@ namespace DX1Utility
 
         }
 
-        private void LogDebug(string message, bool TimeFlag = false)
-        {
-            //Logs incoming message to Debug Log File with Time Stamp if specified
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(Globals.ProfileSavePath + "Dx1Debug.txt", true);
-            if (TimeFlag)
-            {
-                sw.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), message);
-            }
-            else
-            {
-                sw.WriteLine("{0}", message);
-            }
-            sw.Flush();
-            sw.Close();
-        }
-        
         private void SaveButtonstoProfile(string ProfileName)
         {
             //Save the Keymap to .pgm in the Profile folder
@@ -802,6 +786,13 @@ namespace DX1Utility
 
         private void LoadButtonsfromProfile(string ProfileName)
         {
+            //Check for currently Toggled Keys, if any, KeyUp them before changing profiles
+            if(Bags.CheckForToggle())
+            {
+                DebugLog.Instance.writeLog("Found Keys currently pressed, Upping those keys", true);
+                Bags.UpAllKeys();
+            }
+            
             //Load the Keymap from the .pgm file for this profile
             if (System.IO.File.Exists(Globals.ProfileSavePath + ProfileName + ".pgm"))
             {
@@ -809,7 +800,7 @@ namespace DX1Utility
                 LoadFromStream(fs);
                 mFileName = fs.Name;
                 fs.Close();
-                if (C_Debug.Checked) { LogDebug("Profile Keyset Loaded from profile: " + ProfileName, true); }
+                DebugLog.Instance.writeLog("Profile Keyset Loaded from profile: " + ProfileName, true);
             }
             else
             {
@@ -824,7 +815,7 @@ namespace DX1Utility
                 else
                 {
                     //Form is minimized, log error
-                    LogDebug("Error loading Key Mappings for profile " + ProfileName + ". Loading Defaults.", true);
+                    DebugLog.Instance.writeLog("Error loading Key Mappings for profile " + ProfileName + ". Loading Defaults.", true);
                 }
 
             }
@@ -1155,13 +1146,14 @@ namespace DX1Utility
 
         private void C_Debug_CheckedChanged(object sender, EventArgs e)
         {
+            Globals.debugLog = C_Debug.Checked;
             if (C_Debug.Checked)
             {
                 //Add Header detail to log file
-                LogDebug("*******************");
-                LogDebug("Debug Logging initialized");
-                LogDebug("*******************");
-                LogDebug("", true);
+                DebugLog.Instance.writeLog("*******************");
+                DebugLog.Instance.writeLog("Debug Logging initialized");
+                DebugLog.Instance.writeLog("*******************");
+                DebugLog.Instance.writeLog("", true);
             }
 
         }
@@ -1225,6 +1217,16 @@ namespace DX1Utility
                 e.Cancel = true;
                 HideMinimized = true;
                 this.WindowState = FormWindowState.Minimized;
+            }
+            else
+            {
+                //Check for currently Toggled Keys, if any, KeyUp them before changing profiles
+                if (Bags.CheckForToggle())
+                {
+                    DebugLog.Instance.writeLog("Found Keys currently pressed, Upping those keys", true);
+                    Bags.UpAllKeys();
+                }
+                DebugLog.Instance.closeFile();
             }
 
         }
